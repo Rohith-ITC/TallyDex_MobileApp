@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Customer Login | Tally DEx</title>
+  <meta name="description" content="Login to your secure Tally DEx account." />
+  <meta name="application-name" content="Tally DEx" />
+  <meta name="author" content="IT Catalyst Software India Pvt Ltd" />
+  <meta name="theme-color" content="#071523" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400..800&family=Wix+Madefor+Text:wght@400..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <div class="login-shell">
+
+    <!-- ============ LEFT PANEL — animated cloud data exchange ============ -->
+    <aside class="panel-left reveal-fade-in-left" aria-hidden="true">
+      <div class="blob blob-orange"></div>
+      <div class="blob blob-soft"></div>
+
+      <div class="left-content">
+        <div class="viz-card reveal-scale-in delay-200">
+          <!-- poster overlay: the browser picks WebP, or the JPEG if it can't decode it.
+               login.js fades this out once the video starts playing -->
+          <picture class="viz-poster" id="vizPoster">
+            <source srcset="resources/poster_images/illustration.webp" type="image/webp" />
+            <img src="resources/poster_images/illustration.jpg" alt="" />
+          </picture>
+          <video id="vizVideo" autoplay loop muted playsinline preload="metadata"
+            poster="resources/poster_images/illustration.webp">
+            <source src="resources/videos/illustration.mp4" type="video/mp4" />
+            Your browser does not support the video tag.
+          </video>
+        </div>
+
+        <h2 class="left-headline reveal-fade-up delay-400">
+          Complete visibility across<br />
+          your <span class="accent">distributor network</span>.
+        </h2>
+
+        <p class="left-sub reveal-fade-up delay-500">
+          Connect every distributor, automate Tally data exchange, and access
+          real-time inventory and secondary sales from a single platform.
+        </p>
+      </div>
+    </aside>
+
+    <!-- ============ RIGHT PANEL — login form ============ -->
+    <main class="panel-right">
+
+      <div class="top-bar">
+        <a href="https://www.datalynkr.com" target="_blank" rel="noopener noreferrer" class="top-link reveal-fade-up">
+          See how Tally DEx works with DataLynkr
+          <span class="material-symbols-outlined" aria-hidden="true">open_in_new</span>
+        </a>
+      </div>
+
+      <div class="form-column" id="formColumn" data-step="password">
+
+        <div class="brand-block">
+          <a href="/" class="logo-link reveal-scale-in delay-100" title="Tally DEx Home">
+            <svg class="brand-logo" viewBox="0 0 3111 2931" xmlns="http://www.w3.org/2000/svg" role="img"
+              aria-label="Tally DEx logo">
+              <g id="Artboard1" transform="matrix(1.037,0,0,0.977,0,0)">
+                <rect x="0" y="0" width="3000" height="3000" style="fill:none;" />
+                <g transform="matrix(0.596864,-0.803922,0.757408,0.633519,-598.778439,1880.367846)">
+                  <circle cx="1654" cy="1593" r="972" fill="#071523" />
+                </g>
+                <g transform="matrix(0.596864,-0.803922,0.757408,0.633519,-598.778439,1880.367846)">
+                  <path
+                    d="M682.001,1594C682,1593.667 682,1593.333 682,1593C682,1056.539 1117.539,621 1654,621C2190.461,621 2626,1056.539 2626,1593C2626,1593.333 2626,1593.667 2625.999,1594L682.001,1594Z"
+                    fill="#E46C0C" />
+                </g>
+              </g>
+            </svg>
+          </a>
+          <h1 class="brand-title reveal-fade-up delay-200" id="brandTitle">Tally <span class="accent">DEx</span></h1>
+        </div>
+
+        <form id="loginForm" class="login-form" novalidate>
+          <div class="form-fields reveal-fade-up">
+
+            <div class="field-group" data-show="signup" hidden>
+              <label for="name">Name <span class="req">*</span></label>
+              <div class="field-shell">
+                <input id="name" name="name" type="text" placeholder="Full Name" autocomplete="name" />
+              </div>
+            </div>
+
+            <div class="field-group">
+              <label for="email">Email ID <span class="req">*</span></label>
+              <div class="field-shell">
+                <input id="email" name="email" type="email" required placeholder="Email" autocomplete="email" />
+              </div>
+            </div>
+
+            <div class="field-group" data-show="signup forgot" hidden>
+              <label for="mobile">Mobile Number <span class="req">*</span></label>
+              <div class="field-shell">
+                <input id="mobile" name="mobile" type="tel" inputmode="tel" placeholder="Mobile Number"
+                  autocomplete="tel" pattern="[0-9+\- ]{7,15}" />
+              </div>
+            </div>
+
+            <div class="field-group" data-show="signup" data-optional hidden>
+              <label for="signupCode">Employee/Partner Code</label>
+              <div class="field-shell">
+                <input id="signupCode" name="signupCode" type="text" placeholder="Optional Code" />
+              </div>
+            </div>
+
+            <div class="field-group" data-show="password">
+              <label for="password">Password <span class="req">*</span></label>
+              <div class="field-shell field-shell--trailing">
+                <input id="password" name="password" type="password" required placeholder="Password"
+                  autocomplete="current-password" class="password-input" />
+                <button type="button" id="togglePassword" class="icon-btn" aria-label="Show password"
+                  aria-pressed="false">
+                  <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="field-group" data-show="verify-otp" hidden>
+              <label for="otp">OTP <span class="req">*</span></label>
+              <div class="field-shell">
+                <input id="otp" name="otp" type="text" inputmode="numeric" maxlength="6" placeholder="Enter 6 Digit OTP"
+                  autocomplete="one-time-code" />
+              </div>
+            </div>
+
+            <div class="button-stack">
+              <button type="submit" class="btn btn-primary" data-show="password" id="loginBtn">Login</button>
+              <button type="button" class="btn btn-dark" data-show="password" id="gotoOtpBtn">Login with OTP</button>
+
+              <button type="submit" class="btn btn-dark" data-show="request-otp" id="sendOtpBtn" hidden>Send
+                OTP</button>
+
+              <button type="submit" class="btn btn-primary" data-show="verify-otp" id="verifyOtpBtn" hidden>Verify
+                OTP</button>
+              <button type="button" class="btn btn-dark" data-show="verify-otp" id="resendOtpBtn" hidden>Resend
+                OTP</button>
+
+              <button type="submit" class="btn btn-primary" data-show="signup" id="signupBtn" hidden>Sign Up</button>
+
+              <button type="submit" class="btn btn-dark" data-show="forgot" id="resetBtn" hidden>Reset
+                Password</button>
+            </div>
+          </div>
+        </form>
+
+        <div id="message" class="message" role="status" hidden></div>
+
+        <div class="aux-links reveal-fade-up delay-400">
+          <div class="signup-line" data-show="password">
+            New to Tally DEx?<button type="button" id="gotoSignupBtn">Sign up</button>
+          </div>
+          <button type="button" class="forgot-link" id="gotoForgotBtn" data-show="password">Forgot Password?</button>
+          <button type="button" class="back-link" id="backToLogin" data-show="request-otp verify-otp signup forgot"
+            hidden>Back to Login</button>
+        </div>
+
+      </div>
+
+      <footer class="page-footer">
+        <div class="footer-line">
+          <span>&#169;</span>
+          <a href="https://itcatalystindia.com" target="_blank" rel="noopener noreferrer">
+            <span class="footer-brand"><span class="it">IT</span> <span class="catalyst">Catalyst</span></span>
+            <span>Software India Pvt Ltd.</span>
+          </a>
+          <span>2026.</span>
+        </div>
+        <div class="footer-links">
+          <a href="/privacy" target="_blank">Privacy Policy</a>
+          <a href="/terms" target="_blank">Terms of Service</a>
+        </div>
+      </footer>
+
+    </main>
+  </div>
+
+  <script src="login.js" defer></script>
+</body>
+
+</html>

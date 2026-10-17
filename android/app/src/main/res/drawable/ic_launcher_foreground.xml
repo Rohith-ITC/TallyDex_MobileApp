@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Tally DEx mark (TallyDEx_/login/logo.svg): navy disc with an orange half,
+     tilted as in the original. Sized to the adaptive-icon safe zone. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <path android:fillColor="#071523"
+        android:pathData="M54,24 A30,30 0 1,1 53.99,24 Z" />
+    <group android:rotation="-53.4" android:pivotX="54" android:pivotY="54">
+        <path android:fillColor="#E46C0C"
+            android:pathData="M24,54 A30,30 0 0,1 84,54 Z" />
+    </group>
+</vector>

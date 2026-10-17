@@ -1,0 +1,1762 @@
+{
+  "info": {
+    "_postman_id": "26e0e484-6889-4dc8-8252-5ef4d2987743",
+    "name": "TallyDex API v3",
+    "description": "TallyDex (Tally Data Exchange) API.\n\n1. Select the \"TallyDex - Local\" or \"TallyDex - Production\" environment.\n2. Run Auth > Login. The access token, refresh token and first organization id are saved automatically.\n3. All other requests use Bearer {{accessToken}}.\n4. Tenant endpoints (Upload, Mapping, SSV Reports, Client DB, user module allocation) need the x-organization-id header, taken from {{organizationId}}.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "2059349"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "item": [
+        {
+          "name": "API Status",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                ""
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Health Check",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Service status, no authentication."
+    },
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.success && res.data) {",
+                  "  if (res.data.accessToken) pm.collectionVariables.set(\"accessToken\", res.data.accessToken);",
+                  "  if (res.data.refreshToken) pm.collectionVariables.set(\"refreshToken\", res.data.refreshToken);",
+                  "  if (res.data.organizations && res.data.organizations.length && !pm.collectionVariables.get(\"organizationId\")) {",
+                  "    pm.collectionVariables.set(\"organizationId\", String(res.data.organizations[0].id));",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{email}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Saves accessToken, refreshToken and organizationId into collection variables."
+          },
+          "response": []
+        },
+        {
+          "name": "Refresh Token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "if (res && res.success && res.data) {",
+                  "  if (res.data.accessToken) pm.collectionVariables.set(\"accessToken\", res.data.accessToken);",
+                  "  if (res.data.refreshToken) pm.collectionVariables.set(\"refreshToken\", res.data.refreshToken);",
+                  "  if (res.data.organizations && res.data.organizations.length && !pm.collectionVariables.get(\"organizationId\")) {",
+                  "    pm.collectionVariables.set(\"organizationId\", String(res.data.organizations[0].id));",
+                  "  }",
+                  "}"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/refresh-token",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "refresh-token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Forgot Password",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"superowner@tallydex.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/forgot-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "forgot-password"
+              ]
+            },
+            "description": "Sends a password reset link by email."
+          },
+          "response": []
+        },
+        {
+          "name": "Reset Password",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"token\": \"<token-from-email>\",\n  \"newPassword\": \"newPassword123\",\n  \"confirmPassword\": \"newPassword123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/reset-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "reset-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Change Password",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"currentPassword\": \"password123\",\n  \"newPassword\": \"newPassword123\",\n  \"confirmPassword\": \"newPassword123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/change-password",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "change-password"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Update Profile",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Rohith\",\n  \"phone\": \"+919844101210\",\n  \"email\": \"superowner@tallydex.com\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/auth/profile",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "profile"
+              ]
+            },
+            "description": "All fields optional."
+          },
+          "response": []
+        },
+        {
+          "name": "My Activity Log",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/activity?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "activity"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Login, tokens, password and profile."
+    },
+    {
+      "name": "Dashboard",
+      "item": [
+        {
+          "name": "Dashboard Stats",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/dashboard/stats",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "dashboard",
+                "stats"
+              ]
+            },
+            "description": "Figures are scoped by role: SUPEROWNER sees all, OWNER sees own users/orgs, USER sees own access."
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Users",
+      "item": [
+        {
+          "name": "Create User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Rohith\",\n  \"email\": \"rohithp2406@gmail.com\",\n  \"phone\": \"+919844101210\",\n  \"password\": \"Tally123$\",\n  \"confirmPassword\": \"Tally123$\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/users",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Users",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete User",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/users/2",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "users",
+                "2"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "SUPEROWNER creates OWNERs, OWNER creates USERs. A welcome email with the password is sent."
+    },
+    {
+      "name": "Organizations",
+      "item": [
+        {
+          "name": "Create Organization",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"ownerId\": 2,\n  \"name\": \"Acme Corporation\",\n  \"maintainEditLog\": false,\n  \"dbHost\": \"localhost\",\n  \"dbPort\": 3306,\n  \"dbUser\": \"itcata27_acme\",\n  \"dbPassword\": \"dbpassword123\",\n  \"dbSchema\": \"itcata27_acme\",\n  \"receiveAccountingMasters\": true,\n  \"receiveVoucherLedgerEntries\": true,\n  \"receiveBankAllocationDetails\": true,\n  \"receiveInventoryAllocationDetails\": true,\n  \"receiveClosingBalance\": true,\n  \"receiveInventoryMasters\": true,\n  \"receiveBillAllocationDetails\": true,\n  \"receiveRateAndAmount\": true,\n  \"itemSelection\": \"all_items\",\n  \"uploadFrequency\": \"once_in_a_day\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/organizations",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "organizations"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Organizations",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/organizations?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "organizations"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Owners",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/organizations/owners",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "organizations",
+                "owners"
+              ]
+            },
+            "description": "OWNER users available for assignment."
+          },
+          "response": []
+        },
+        {
+          "name": "Update Organization",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Acme Corporation Ltd\",\n  \"maintainEditLog\": true,\n  \"uploadFrequency\": \"every_upload\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/organizations/{{organizationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "organizations",
+                "{{organizationId}}"
+              ]
+            },
+            "description": "Send only the fields to change. Accepts the same fields as Create Organization."
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Organization",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/organizations/{{organizationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "organizations",
+                "{{organizationId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Create/update/delete is SUPEROWNER only. The tenant database (dbSchema) must already exist on cPanel."
+    },
+    {
+      "name": "Modules",
+      "item": [
+        {
+          "name": "Create Module",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Inventory Management\",\n  \"description\": \"Manage inventory and stock items\",\n  \"code\": \"INV_MGMT\",\n  \"clientName\": \"Inventory\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/modules",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modules"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Modules",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/modules?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modules"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Module",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/modules/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modules",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Allocate Modules to Organization",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"organizationId\": 1,\n  \"moduleIds\": [\n    1,\n    2,\n    3\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/modules/allocate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modules",
+                "allocate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Organization Modules",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/modules/organization/{{organizationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modules",
+                "organization",
+                "{{organizationId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Allocate Modules to User",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userId\": 4,\n  \"moduleIds\": [\n    1,\n    2\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/modules/allocate-user",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modules",
+                "allocate-user"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "User Modules in Organization",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/modules/user/4/organization/{{organizationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modules",
+                "user",
+                "4",
+                "organization",
+                "{{organizationId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Users with Modules in Organization",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/modules/users/organization",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "modules",
+                "users",
+                "organization"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Module master and allocation to organizations and users."
+    },
+    {
+      "name": "Tally Connections",
+      "item": [
+        {
+          "name": "List Tally Connections",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tally-connections?page=1&limit=10&organizationId={{organizationId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tally-connections"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "organizationId",
+                  "value": "{{organizationId}}"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Activate Connection",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tally-connections/1/activate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tally-connections",
+                "1",
+                "activate"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Deactivate Connection",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/tally-connections/1/deactivate",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "tally-connections",
+                "1",
+                "deactivate"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Client DB (UDF)",
+      "item": [
+        {
+          "name": "Create UDF Formulas",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": [\n    {\n      \"object\": \"Company\",\n      \"datatype\": \"S1\",\n      \"udf\": \"$Company1\"\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/client-db/udf-formula",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "client-db",
+                "udf-formula"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List UDF Formulas",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/client-db/udf-formula?page=1&limit=10&object=Company",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "client-db",
+                "udf-formula"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                },
+                {
+                  "key": "object",
+                  "value": "Company"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Tenant database. Requires x-organization-id."
+    },
+    {
+      "name": "Upload",
+      "item": [
+        {
+          "name": "Upload Dealers",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": [\n    {\n      \"delcode\": \"DLR001\",\n      \"delname\": \"ABC Dealers\",\n      \"state\": \"Maharashtra\",\n      \"region\": \"West\",\n      \"division\": \"North\",\n      \"status\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/upload/dealer",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "upload",
+                "dealer"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Uploaded Dealers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/upload/dealer?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "upload",
+                "dealer"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Dealer List",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/upload/dealer/list?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "upload",
+                "dealer",
+                "list"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Upload Stock Items",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": [\n    {\n      \"itemcode\": \"ITEM001\",\n      \"itemdesc\": \"Product Name\",\n      \"stockgroup\": \"Electronics\",\n      \"stockcategory\": \"Mobile\",\n      \"subgroup\": \"Smartphones\",\n      \"baseunit\": \"PCS\",\n      \"addlunit\": \"BOX\",\n      \"denomi\": 10,\n      \"convrs\": 1.5,\n      \"mrpappldate\": \"2026-01-01\",\n      \"mrpprice\": 100.5,\n      \"costappldate\": \"2026-01-01\",\n      \"costprice\": 80,\n      \"gstappldate\": \"2026-01-01\",\n      \"hsncode\": \"12345678\",\n      \"gstrate\": 18,\n      \"cess\": 0,\n      \"tallyupload\": 0,\n      \"status\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/upload/stockitem",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "upload",
+                "stockitem"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "List Uploaded Stock Items",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/upload/stockitem?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "upload",
+                "stockitem"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "HO master uploads into the tenant database. Requires x-organization-id."
+    },
+    {
+      "name": "Mapping - Dealer",
+      "item": [
+        {
+          "name": "Pending Dealer Mappings",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mapping/dealer/pending?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mapping",
+                "dealer",
+                "pending"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Dealer Mappings",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": [\n    {\n      \"companyid\": 1,\n      \"ho_id\": 1\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/mapping/dealer",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mapping",
+                "dealer"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mapped Dealers",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mapping/dealer/mapped?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mapping",
+                "dealer",
+                "mapped"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Dealer Mapping",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mapping/dealer/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mapping",
+                "dealer",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Map Tally ledgers to HO dealers. Requires x-organization-id."
+    },
+    {
+      "name": "Mapping - Stock Item",
+      "item": [
+        {
+          "name": "Companies",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mapping/stockitem/companies?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mapping",
+                "stockitem",
+                "companies"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "HO Stock Items",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mapping/stockitem/ho-stockitems?page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mapping",
+                "stockitem",
+                "ho-stockitems"
+              ],
+              "query": [
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Pending Stock Items",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mapping/stockitem/pending?companyid=1&page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mapping",
+                "stockitem",
+                "pending"
+              ],
+              "query": [
+                {
+                  "key": "companyid",
+                  "value": "1"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mapped Stock Items",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mapping/stockitem/mapped?companyid=1&page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mapping",
+                "stockitem",
+                "mapped"
+              ],
+              "query": [
+                {
+                  "key": "companyid",
+                  "value": "1"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Auto-Mapping Suggestions",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mapping/stockitem/auto-mapping?companyid=1&page=1&limit=10",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mapping",
+                "stockitem",
+                "auto-mapping"
+              ],
+              "query": [
+                {
+                  "key": "companyid",
+                  "value": "1"
+                },
+                {
+                  "key": "page",
+                  "value": "1"
+                },
+                {
+                  "key": "limit",
+                  "value": "10"
+                }
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Create Stock Item Mappings",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"data\": [\n    {\n      \"companyid\": 1,\n      \"mstid\": 1,\n      \"ho_id\": 1,\n      \"packsize\": 24\n    }\n  ]\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/mapping/stockitem",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mapping",
+                "stockitem"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Stock Item Mapping",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/mapping/stockitem/1",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "mapping",
+                "stockitem",
+                "1"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Map Tally stock items to HO stock items. Requires x-organization-id."
+    },
+    {
+      "name": "SSV Reports",
+      "item": [
+        {
+          "name": "Filter Dropdowns",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/ssv-reports/filters/dropdowns",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ssv-reports",
+                "filters",
+                "dropdowns"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Sales Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateFrom\": \"2026-04-01\",\n  \"dateTo\": \"2026-10-31\",\n  \"companyid\": [\n    1\n  ],\n  \"page\": 1,\n  \"limit\": 300\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ssv-reports/sales",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ssv-reports",
+                "sales"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Mapped Sales Report",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"dateFrom\": \"2026-04-01\",\n  \"dateTo\": \"2026-10-31\",\n  \"companyid\": [\n    1\n  ],\n  \"dealer_id\": [],\n  \"stockgroup\": [],\n  \"stockcategory\": [],\n  \"state\": [],\n  \"region\": [],\n  \"division\": [],\n  \"page\": 1,\n  \"limit\": 300\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ssv-reports/mapped-sales",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ssv-reports",
+                "mapped-sales"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Item Closing Balance - Mapped",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyid\": [\n    1\n  ],\n  \"dealer_id\": [],\n  \"stockgroup\": [],\n  \"stockcategory\": [],\n  \"state\": [],\n  \"region\": [],\n  \"division\": [],\n  \"page\": 1,\n  \"limit\": 300\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ssv-reports/item-closing-balance/mapped",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ssv-reports",
+                "item-closing-balance",
+                "mapped"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Item Closing Balance - All",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              },
+              {
+                "key": "x-organization-id",
+                "value": "{{organizationId}}",
+                "description": "Organization whose tenant database is used"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"companyid\": [\n    1\n  ],\n  \"page\": 1,\n  \"limit\": 300\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{baseUrl}}/ssv-reports/item-closing-balance/all",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "ssv-reports",
+                "item-closing-balance",
+                "all"
+              ]
+            }
+          },
+          "response": []
+        }
+      ],
+      "description": "Secondary sales reports from the tenant database. Requires x-organization-id. Empty filter arrays mean \"all\"."
+    }
+  ],
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{accessToken}}",
+        "type": "string"
+      }
+    ]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "packages": {},
+        "requests": {},
+        "exec": [
+          ""
+        ]
+      }
+    }
+  ],
+  "variable": [
+    {
+      "key": "accessToken",
+      "value": ""
+    },
+    {
+      "key": "refreshToken",
+      "value": ""
+    },
+    {
+      "key": "organizationId",
+      "value": ""
+    },
+    {
+      "key": "baseUrl",
+      "value": ""
+    },
+    {
+      "key": "email",
+      "value": ""
+    },
+    {
+      "key": "password",
+      "value": ""
+    }
+  ]
+}

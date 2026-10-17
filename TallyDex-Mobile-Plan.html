@@ -1,0 +1,891 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>TallyDex Mobile Plan</title>
+<meta name="description" content="Phased plan and prompts to build the first draft of the TallyDex Android app (React Native)." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Wix+Madefor+Display:wght@500;600;700&display=swap" />
+<style>
+  :root {
+    --accent: #E46C0C; --accent-hi: #F07E22; --accent-lo: #C95F0A;
+    --accent-tint: rgba(228,108,12,.09); --accent-tint-2: rgba(228,108,12,.18);
+    --canvas: #EEF0F3; --surface: #FFFFFF; --surface-2: #F7F8FA; --surface-3: #EFF1F5;
+    --line: #E2E5EA; --line-soft: #EDEFF3;
+    --text: #0C0F14; --text-2: #4B525E; --text-3: #7B8494; --text-4: #A2AAB8;
+    --ok: #0B8A5F; --ok-bg: #E6F6F0; --warn: #A75B0C; --warn-bg: #FDF2E4;
+    --danger: #C93838; --danger-bg: #FDECEC; --info: #3552C4; --info-bg: #ECEFFC;
+    --chrome: #000000; --code-bg: #0C0F14; --code-text: #E9ECF1;
+    --font-display: "Wix Madefor Display", "Inter", system-ui, sans-serif;
+    --font-ui: "Inter", -apple-system, "Segoe UI", Roboto, sans-serif;
+    --r-card: 14px; --r-ctl: 10px;
+    --sh-1: 0 1px 2px rgba(12,15,20,.05), 0 1px 3px rgba(12,15,20,.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --canvas: #0A0C10; --surface: #14171C; --surface-2: #1A1E24; --surface-3: #21262E;
+      --line: #262C35; --line-soft: #1E232A;
+      --text: #EDEFF3; --text-2: #AEB6C2; --text-3: #838D9B; --text-4: #67707E;
+      --accent-tint: rgba(228,108,12,.14); --accent-tint-2: rgba(228,108,12,.26);
+      --ok: #4ED0A2; --ok-bg: rgba(11,138,95,.16); --warn: #E8A75B; --warn-bg: rgba(167,91,12,.18);
+      --danger: #F08A8A; --danger-bg: rgba(201,56,56,.16); --info: #93A6F5; --info-bg: rgba(53,82,196,.18);
+      --code-bg: #07090C;
+    }
+  }
+  :root[data-theme="dark"] {
+    --canvas: #0A0C10; --surface: #14171C; --surface-2: #1A1E24; --surface-3: #21262E;
+    --line: #262C35; --line-soft: #1E232A;
+    --text: #EDEFF3; --text-2: #AEB6C2; --text-3: #838D9B; --text-4: #67707E;
+    --accent-tint: rgba(228,108,12,.14); --accent-tint-2: rgba(228,108,12,.26);
+    --ok: #4ED0A2; --ok-bg: rgba(11,138,95,.16); --warn: #E8A75B; --warn-bg: rgba(167,91,12,.18);
+    --danger: #F08A8A; --danger-bg: rgba(201,56,56,.16); --info: #93A6F5; --info-bg: rgba(53,82,196,.18);
+    --code-bg: #07090C;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body { margin: 0; background: var(--canvas); color: var(--text); font-family: var(--font-ui); font-size: 15px; line-height: 1.6; -webkit-font-smoothing: antialiased; }
+  a { color: var(--accent); }
+  code, pre { font-family: ui-monospace, "Cascadia Code", Consolas, monospace; }
+  code { font-size: .86em; background: var(--surface-3); border: 1px solid var(--line); padding: 1px 5px; border-radius: 5px; }
+
+  .top { background: var(--chrome); color: #fff; }
+  .top-inner { max-width: 1120px; margin: 0 auto; padding: 40px 16px 34px; }
+  .brand { display: flex; align-items: center; gap: 12px; font-family: var(--font-display); font-size: 20px; }
+  .brand b { color: var(--accent); }
+  .top h1 { font-family: var(--font-display); font-size: clamp(28px, 4vw, 40px); line-height: 1.1; margin: 22px 0 10px; letter-spacing: -.02em; }
+  .top p { color: #AAB4C5; max-width: 70ch; margin: 0; }
+  .meta { margin-top: 18px; display: flex; flex-wrap: wrap; gap: 8px; }
+  .meta span { font-size: 12px; font-weight: 600; color: #d1d5dc; border: 1px solid rgba(255,255,255,.16); border-radius: 99px; padding: 3px 10px; }
+
+  .layout { max-width: 1120px; margin: 0 auto; padding: 24px 16px 80px; display: grid; grid-template-columns: 220px minmax(0,1fr); gap: 28px; }
+  nav.toc { position: sticky; top: 16px; align-self: start; font-size: 13.5px; }
+  nav.toc .lbl { font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--text-4); margin: 0 0 8px 10px; }
+  nav.toc a { display: block; padding: 6px 10px; border-radius: 8px; color: var(--text-2); text-decoration: none; border-left: 3px solid transparent; }
+  nav.toc a:hover { background: var(--surface); color: var(--text); }
+  nav.toc a.sub { padding-left: 22px; font-size: 12.5px; color: var(--text-3); }
+  @media (max-width: 860px) { .layout { grid-template-columns: 1fr; } nav.toc { position: static; display: none; } }
+
+  section { margin-bottom: 44px; scroll-margin-top: 16px; }
+  h2 { font-family: var(--font-display); font-size: 26px; letter-spacing: -.015em; margin: 0 0 6px; line-height: 1.2; }
+  .eyebrow { display: inline-flex; align-items: center; gap: 7px; font-size: 10.5px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--accent); margin-bottom: 8px; }
+  .eyebrow::before { content: ""; width: 14px; height: 2px; background: var(--accent); border-radius: 2px; }
+  h3 { font-size: 16.5px; margin: 26px 0 8px; letter-spacing: -.01em; }
+  h4 { font-size: 14px; margin: 18px 0 6px; }
+  .lede { color: var(--text-2); max-width: 75ch; margin: 0 0 16px; }
+  p { max-width: 80ch; }
+
+  .card { background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-card); box-shadow: var(--sh-1); padding: 18px 20px; }
+  .grid3 { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .grid2 { display: grid; gap: 14px; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); }
+  .card h3 { margin-top: 0; }
+  .card ul { padding-left: 18px; margin: 8px 0 0; }
+  .card li { margin: 4px 0; font-size: 14px; color: var(--text-2); }
+  .tag { display: inline-block; font-size: 11px; font-weight: 700; padding: 2px 9px; border-radius: 99px; background: var(--accent-tint); color: var(--accent); border: 1px solid var(--accent-tint-2); margin-bottom: 8px; }
+  .tag.ok { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+  .tag.warn { background: var(--warn-bg); color: var(--warn); border-color: transparent; }
+  .tag.info { background: var(--info-bg); color: var(--info); border-color: transparent; }
+  .tag.mute { background: var(--surface-3); color: var(--text-3); border-color: var(--line); }
+
+  .tbl-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-card); background: var(--surface); box-shadow: var(--sh-1); }
+  table { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  th { text-align: left; font-size: 11px; letter-spacing: .06em; text-transform: uppercase; color: var(--text-3); background: var(--surface-2); padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--line-soft); vertical-align: top; color: var(--text-2); }
+  td:first-child { color: var(--text); font-weight: 600; }
+  tr:last-child td { border-bottom: 0; }
+
+  .swatches { display: grid; gap: 10px; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  .sw { border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface); }
+  .sw i { display: block; height: 52px; }
+  .sw div { padding: 8px 10px; font-size: 12px; }
+  .sw b { display: block; font-size: 12.5px; color: var(--text); }
+  .sw span { color: var(--text-3); font-family: ui-monospace, Consolas, monospace; }
+
+  ol.rules { counter-reset: r; list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+  ol.rules li { counter-increment: r; background: var(--surface); border: 1px solid var(--line); border-radius: 12px; padding: 12px 14px 12px 58px; position: relative; font-size: 14px; color: var(--text-2); }
+  ol.rules li::before { content: "R" counter(r); position: absolute; left: 12px; top: 12px; font-weight: 700; font-size: 12px; color: var(--accent); background: var(--accent-tint); border-radius: 6px; padding: 1px 6px; }
+  ol.rules li b { color: var(--text); }
+
+  .phones { display: flex; flex-wrap: wrap; gap: 22px; }
+  .phone { width: 230px; height: 470px; border-radius: 28px; border: 8px solid #1b1f26; background: var(--canvas); overflow: hidden; position: relative; display: flex; flex-direction: column; flex-shrink: 0; }
+  .ph-status { height: 18px; background: var(--chrome); }
+  .ph-head { background: var(--chrome); color: #fff; height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 10px; font-size: 12.5px; font-weight: 600; }
+  .ph-head .ic { width: 14px; height: 2px; background: #fff; box-shadow: 0 4px 0 #fff, 0 -4px 0 #fff; margin-right: 4px; }
+  .ph-head .sp { flex: 1; }
+  .ph-head .dot { width: 16px; height: 16px; border-radius: 50%; border: 1.5px solid #8e8e93; }
+  .ph-scope { background: var(--surface); border-bottom: 1px solid var(--line); padding: 6px 10px; font-size: 10px; display: flex; align-items: center; gap: 6px; color: var(--text-3); }
+  .ph-scope b { color: var(--text); font-size: 10.5px; }
+  .ph-scope i { width: 6px; height: 6px; border-radius: 50%; background: var(--accent); }
+  .ph-body { flex: 1; padding: 10px; display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+  .ph-card { background: var(--surface); border: 1px solid var(--line); border-radius: 9px; padding: 8px; font-size: 9.5px; color: var(--text-3); }
+  .ph-card b { display: block; font-size: 14px; color: var(--text); font-family: var(--font-display); }
+  .ph-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .ph-greet { background: var(--chrome); border-radius: 10px; color: #fff; padding: 10px; font-family: var(--font-display); font-size: 13px; }
+  .ph-greet small { display: block; font-family: var(--font-ui); font-size: 9px; color: #AAB4C5; }
+  .ph-chips { display: flex; gap: 5px; }
+  .ph-chips span { font-size: 9px; padding: 3px 8px; border-radius: 99px; background: var(--surface); border: 1px solid var(--line); color: var(--text-2); }
+  .ph-chips span.on { background: var(--accent-tint); border-color: var(--accent-tint-2); color: var(--accent); font-weight: 700; }
+  .ph-tabs { height: 46px; background: var(--surface); border-top: 1px solid var(--line); display: grid; grid-template-columns: repeat(4,1fr); font-size: 8.5px; color: var(--text-3); text-align: center; align-items: center; }
+  .ph-tabs span::before { content: ""; display: block; width: 14px; height: 14px; border-radius: 4px; border: 1.5px solid currentColor; margin: 0 auto 2px; }
+  .ph-tabs span.on { color: var(--accent); font-weight: 700; }
+  .ph-side { position: absolute; inset: 18px 52px 0 0; background: #000; color: #8e8e93; padding: 14px 12px; font-size: 10.5px; display: flex; flex-direction: column; gap: 3px; box-shadow: 8px 0 30px rgba(0,0,0,.4); }
+  .ph-dim { position: absolute; inset: 18px 0 0 0; background: rgba(10,12,16,.45); }
+  .ph-side .logo { color: #fff; font-family: var(--font-display); font-size: 15px; margin-bottom: 8px; }
+  .ph-side .logo b { color: var(--accent); }
+  .ph-side .prof { background: rgba(255,255,255,.06); border: 1px solid rgba(255,255,255,.08); border-radius: 9px; padding: 7px 8px; color: #fff; font-weight: 600; }
+  .ph-side .prof small { display: block; color: #8e8e93; font-weight: 400; font-size: 8.5px; }
+  .ph-side .org { margin: 6px 0 6px; font-size: 8px; letter-spacing: .1em; color: #8e8e93; }
+  .ph-side .orgbox { border: 1px solid rgba(255,255,255,.25); border-radius: 7px; padding: 6px 8px; color: #fff; margin-bottom: 8px; }
+  .ph-side .it { padding: 6px 8px; border-radius: 6px; position: relative; }
+  .ph-side .it.on { background: rgba(255,255,255,.08); color: #fff; }
+  .ph-side .it.on::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--accent); border-radius: 3px 0 0 3px; }
+  .ph-side .subit { padding: 4px 8px 4px 22px; font-size: 9.5px; border-left: 1px solid rgba(255,255,255,.1); margin-left: 14px; }
+  .ph-side .logout { margin-top: auto; border: 1px solid #3f3f46; border-radius: 6px; padding: 7px 8px; color: #d1d5dc; }
+  .ph-cap { font-size: 12.5px; color: var(--text-3); margin-top: 8px; max-width: 230px; }
+
+  .phase { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--sh-1); margin-bottom: 18px; overflow: hidden; }
+  .phase-head { display: flex; gap: 14px; align-items: flex-start; padding: 18px 20px; border-bottom: 1px solid var(--line-soft); }
+  .phase-num { flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--accent-tint); color: var(--accent); font-family: var(--font-display); font-weight: 700; font-size: 16px; }
+  .phase-head h3 { margin: 0 0 3px; font-size: 17px; }
+  .phase-head p { margin: 0; color: var(--text-3); font-size: 13.5px; }
+  .phase-body { padding: 16px 20px 20px; }
+  .phase-body .cols { display: grid; gap: 18px; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); }
+  .phase-body h4 { font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--text-3); margin: 0 0 6px; }
+  .phase-body ul { margin: 0; padding-left: 18px; font-size: 13.5px; color: var(--text-2); }
+  .phase-body li { margin: 3px 0; }
+  .prompt { margin-top: 16px; border-radius: 12px; overflow: hidden; border: 1px solid var(--line); }
+  .prompt-bar { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; background: var(--surface-2); border-bottom: 1px solid var(--line); font-size: 12px; font-weight: 700; color: var(--text-2); }
+  .copy { font: inherit; font-size: 12px; font-weight: 600; border: 1px solid var(--line); background: var(--surface); color: var(--text-2); border-radius: 8px; padding: 4px 10px; cursor: pointer; }
+  .copy:hover { border-color: var(--accent); color: var(--accent); }
+  .copy.done { background: var(--ok-bg); color: var(--ok); border-color: transparent; }
+  pre.ptext { margin: 0; padding: 14px 16px; background: var(--code-bg); color: var(--code-text); font-size: 12.5px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; max-height: 460px; overflow: auto; }
+  .check li::marker { content: "☐  "; color: var(--accent); }
+
+  .callout { border-left: 3px solid var(--accent); background: var(--surface); border-radius: 0 12px 12px 0; padding: 12px 16px; margin: 14px 0; font-size: 14px; color: var(--text-2); border-top: 1px solid var(--line); border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+  .callout b { color: var(--text); }
+  .flow { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; font-size: 13px; }
+  .flow span { background: var(--surface); border: 1px solid var(--line); border-radius: 8px; padding: 6px 10px; }
+  .flow em { color: var(--text-4); font-style: normal; }
+  footer { text-align: center; color: var(--text-4); font-size: 12px; padding: 24px 16px 40px; }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="top-inner">
+    <div class="brand">
+      <svg width="30" height="30" viewBox="0 0 100 100" aria-hidden="true"><circle cx="50" cy="50" r="46" fill="#071523" stroke="#2a3443" stroke-width="2"/><path d="M14 64 A38 38 0 0 1 72 18 Z" fill="#E46C0C"/></svg>
+      <span>Tally <b>DEx</b> · Mobile</span>
+    </div>
+    <h1>Android app: plan to first draft</h1>
+    <p>A phased plan for building the TallyDex Android app in React Native. Each phase has one prompt to paste. The first draft has the full UI/UX skeleton: a user can log in, see a role-aware sidebar and dashboard, and open every screen in the portal.</p>
+    <div class="meta">
+      <span>Prepared 14 Oct 2026</span>
+      <span>8 prompts · 7 phases</span>
+      <span>Target: Android (React Native 0.81.6)</span>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <nav class="toc" aria-label="Contents">
+    <div class="lbl">Contents</div>
+    <a href="#use">How to use this file</a>
+    <a href="#audit">1 · Source audit</a>
+    <a href="#decisions">2 · Gaps &amp; decisions</a>
+    <a href="#stack">3 · Tech stack &amp; structure</a>
+    <a href="#tokens">4 · Theme tokens</a>
+    <a href="#rules">5 · Screen rules</a>
+    <a href="#nav">6 · Navigation map</a>
+    <a href="#inventory">7 · Screen inventory</a>
+    <a href="#api">8 · API contract (draft 1)</a>
+    <a href="#phases">9 · Phases &amp; prompts</a>
+    <a class="sub" href="#p1">P1 Design sheet</a>
+    <a class="sub" href="#p2">P2 Scaffold</a>
+    <a class="sub" href="#p3">P3 Components</a>
+    <a class="sub" href="#p4">P4 API &amp; auth</a>
+    <a class="sub" href="#p5">P5 App shell</a>
+    <a class="sub" href="#p6a">P6A Dashboard &amp; account</a>
+    <a class="sub" href="#p6b">P6B Module screens</a>
+    <a class="sub" href="#p7">P7 QA &amp; APK</a>
+    <a href="#dod">10 · First-draft definition of done</a>
+    <a href="#risks">11 · Risks</a>
+  </nav>
+
+  <main>
+
+  <section id="use">
+    <div class="eyebrow">Start here</div>
+    <h2>How to use this file</h2>
+    <p class="lede">Run one prompt per message, in order. Every prompt starts by telling Claude to read this file, so each session gets the same context. Each phase ends with a check-in, so you can review the result before the next phase starts.</p>
+    <div class="flow">
+      <span>P1 Design sheet</span><em>→</em><span>P2 Scaffold</span><em>→</em><span>P3 Components</span><em>→</em><span>P4 API &amp; auth</span><em>→</em><span>P5 App shell</span><em>→</em><span>P6A Dashboard &amp; account</span><em>→</em><span>P6B Module screens</span><em>→</em><span>P7 QA &amp; APK</span>
+    </div>
+    <div class="callout"><b>Three sources, three jobs.</b> <code>TallyDex-FE</code> supplies the functionality (screens, roles, module gates, API calls). <code>TallyDex-app/TallyDEx_</code> supplies the colours, type and component look. <code>DataLynkr-app</code> supplies the mobile skeleton: header bar, slide-in sidebar, footer tabs, how screens are ordered, and the RN conventions. When the sources disagree, follow the source that owns that job.</div>
+  </section>
+
+  <section id="audit">
+    <div class="eyebrow">Section 1</div>
+    <h2>Source audit</h2>
+    <p class="lede">Findings from reading all three projects on 14 Oct 2026.</p>
+    <div class="grid3">
+      <div class="card">
+        <span class="tag">Functionality</span>
+        <h3>TallyDex-FE (web portal)</h3>
+        <ul>
+          <li>React 18, Vite, MUI 5, TanStack Query, axios. ~21.8k lines across 26 pages.</li>
+          <li>Three roles: <b>SUPEROWNER</b>, <b>OWNER</b> and <b>USER</b>. A SUPEROWNER can also <i>connect</i> to an organization and then sees the OWNER menu (<code>superowner_connected_mode</code>).</li>
+          <li>Pages are gated by 9 module codes from <code>GET /modules/organization/:id</code>, using <code>status === 'ACTIVE'</code>: <code>tally_connections, HO_Dealers, HO_Stockitem, Map_Dealer, Map_Stockitem, SecondarySales, SSV_SalesAnalytics, ClosingStock, ClosingStock_Analytics</code>.</li>
+          <li>The menu is built in <code>src/components/Layout.tsx → getMenuItems()</code> and goes up to 3 levels deep (Reports › Sales › All).</li>
+          <li>Tenant endpoints need the <code>x-organization-id</code> header. Each service passes it by hand.</li>
+          <li>On a 401 the app logs the user out. It never calls <code>/auth/refresh-token</code>.</li>
+          <li>On login: if <code>isFirstLogin</code> is set, the user is sent to Change Password. The first organization is selected automatically, and modules and the SSV filter cache are prefetched.</li>
+          <li>The dashboard shows 4 stat cards that depend on the role (<code>GET /dashboard/stats</code>).</li>
+          <li>Reports are wide tables (16 columns in the Sales report) plus Recharts analytics (pie, line and bar).</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">Theme</span>
+        <h3>TallyDEx_ (design reference)</h3>
+        <ul>
+          <li><code>login/</code>: login and change password. White form column, floating-label fields with a warm tint, orange gradient primary button, black secondary button.</li>
+          <li><code>nav/</code>: portal shell. <b>Black sidebar</b>, grey <code>#EEF0F3</code> canvas with white cards, white top bar, breadcrumb and an entity (organization) scope switcher.</li>
+          <li>Accent <code>#E46C0C</code> (hover <code>#F07E22</code>, pressed <code>#C95F0A</code>). The active item in the sidebar has a 4px orange left bar.</li>
+          <li>Type: <b>Wix Madefor Display</b> for titles and the brand, <b>Inter</b> for the UI (login uses Wix Madefor Text).</li>
+          <li>Full token set in <code>nav/app.css</code>: surfaces, 4 text greys, status colours (ok, warn, danger, info), radii 14/10/8, shadows, and a <b>dark theme</b>.</li>
+          <li>Components: page head with eyebrow, card head with lead icon, stat tiles, badges, empty states, filter bar, pager, toasts, collapsible cards.</li>
+          <li>The sidebar labels are a proposed future IA (Entity, Rules Activation, Price Level, SyncLog…). Most of these have <b>no API</b> yet, so only the styling is used.</li>
+        </ul>
+      </div>
+      <div class="card">
+        <span class="tag">Skeleton</span>
+        <h3>DataLynkr-app (mobile reference)</h3>
+        <ul>
+          <li>RN 0.81.6 (old arch, Hermes), React 19.1, React Navigation 7 (native-stack + bottom-tabs), TS, axios, zustand, AsyncStorage.</li>
+          <li><b>Header</b> (<code>StatusBarTopBar</code>): solid brand-colour bar, ≥47dp, 16dp padding. Hamburger or back arrow on the left, then a 17sp/600 title, at most 2 icons on the right. The status bar matches the header.</li>
+          <li><b>Sidebar</b> (<code>AppSidebar</code>): global, slides in from the left in a Modal. Width = min(89% of screen, 348dp), 280ms animation, swipe to close. Order: logo row, profile card, COMPANY picker, menu list (expandable groups), logout.</li>
+          <li><b>Footer tabs</b>: white, 1px top border, 24dp icons with 10sp labels. Hidden on detail and form screens.</li>
+          <li>Back button: pops the stack, otherwise shows an Exit dialog. Permissions are deny-by-default.</li>
+          <li>Conventions worth copying: <code>AppText</code> wrapper, colour tokens only, <code>showDialog</code> instead of <code>Alert</code>, a single <code>navigationRef</code>, <code>navigationBarTranslucent</code> on every Modal, 16KB page alignment in Gradle.</li>
+          <li>Fonts already bundled include Wix Madefor Display, so they can be reused.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="decisions">
+    <div class="eyebrow">Section 2</div>
+    <h2>Gaps &amp; decisions</h2>
+    <p class="lede">Places where the sources disagree or are missing something. Each one has a recommendation. Rows marked <span class="tag warn" style="margin:0">Confirm</span> are asked at the start of Phase 1. The rest are adopted unless you say otherwise.</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>#</th><th>Topic</th><th>Recommendation</th><th>Why</th><th>Status</th></tr></thead>
+      <tbody>
+        <tr><td>D1</td><td>Header colour</td><td>Solid <b>black</b> header (<code>#000000</code>), the same colour as the sidebar, with white title and icons. The status bar is black with light content.</td><td>DataLynkr's header uses the same colour as its sidebar. The TallyDex sidebar is black. Alternative: navy <code>#071523</code> from the logo and login theme-colour.</td><td><span class="tag warn">Confirm</span></td></tr>
+        <tr><td>D2</td><td>Footer tab bar</td><td>Role-aware 4-tab bar on tab-root screens. OWNER/USER: <b>Home · Mapping · Reports · Activity</b>. SUPEROWNER: <b>Home · Users · Modules · Activity</b>. Tabs the user has no module for are hidden. With fewer than 2 tabs, the bar is hidden.</td><td>Matches the DataLynkr skeleton and keeps the top destinations one tap away. The sidebar still lists everything.</td><td><span class="tag warn">Confirm</span></td></tr>
+        <tr><td>D3</td><td>Login: "Login with OTP" and "Sign up"</td><td><b>Leave both out</b> of draft 1. Login has email + password and a Forgot Password link only.</td><td>The design has them, but the API has no OTP or sign-up endpoint. Users are created by SUPEROWNER or OWNER.</td><td><span class="tag warn">Confirm</span></td></tr>
+        <tr><td>D4</td><td>Accent orange</td><td><code>#E46C0C</code> is the only accent. The design's sidebar indicator <code>#f27036</code> is normalised to it.</td><td>Two near-identical oranges look like a mistake on the same screen.</td><td><span class="tag ok">Adopted</span></td></tr>
+        <tr><td>D5</td><td>Fonts</td><td>Wix Madefor Display (600/700) for the brand, the dashboard greeting and stat values. Inter (400/500/600/700) for everything else.</td><td>Follows <code>nav/app.css</code>. Wix TTFs can be copied from DataLynkr. Inter is bundled as static TTFs.</td><td><span class="tag ok">Adopted</span></td></tr>
+        <tr><td>D6</td><td>Icons</td><td><code>lucide-react-native</code>, the same family as the design reference.</td><td>Keeps the sidebar and tiles visually identical to <code>nav/index.html</code>.</td><td><span class="tag ok">Adopted</span></td></tr>
+        <tr><td>D7</td><td>Menu depth</td><td>At most <b>2 levels</b> on mobile. Reports › Sales › All becomes two groups: <b>Sales</b> (All, Mapped, Analytics) and <b>Closing Stock</b> (All, Mapped, Analytics).</td><td>Three nested accordions don't fit well on a 360dp phone.</td><td><span class="tag ok">Adopted</span></td></tr>
+        <tr><td>D8</td><td>Reset Password</td><td>The app does Forgot Password only. The emailed reset link keeps opening the web portal. Deep links can come in a later draft.</td><td>The reset token arrives in an email link, and deep links are out of scope for draft 1.</td><td><span class="tag ok">Adopted</span></td></tr>
+        <tr><td>D9</td><td>Token storage &amp; refresh</td><td>Store tokens in <code>react-native-keychain</code>. On a 401, call <code>/auth/refresh-token</code> once with a single-flight queue, retry the request, and log out only if the refresh fails.</td><td>Mobile sessions last longer. The web app's hard logout on 401 would be annoying on a phone.</td><td><span class="tag ok">Adopted</span></td></tr>
+        <tr><td>D10</td><td>Theme mode</td><td>Draft 1 ships <b>light only</b>. Dark tokens are defined in the theme files so dark mode can be switched on later.</td><td>Keeps the draft small while matching the dark palette in <code>app.css</code>.</td><td><span class="tag ok">Adopted</span></td></tr>
+        <tr><td>D11</td><td>Organization scope</td><td>The organization picker sits in the sidebar (DataLynkr "COMPANY" slot), labelled <b>ORGANIZATION</b>. Tenant screens show a slim scope bar under the header with the active organization name.</td><td>Matches DataLynkr's skeleton and the "global scope" idea in the design (<code>.scope-btn</code>).</td><td><span class="tag ok">Adopted</span></td></tr>
+        <tr><td>D12</td><td>Project location &amp; id</td><td><code>C:\Users\johna\Desktop\TallyDex-app\TallyDexMobile</code>, Android package <code>com.itcatalyst.tallydex</code>, display name "Tally DEx".</td><td>Keeps the references (<code>TallyDEx_</code>, Postman) next to the app.</td><td><span class="tag info">Confirm in P2</span></td></tr>
+        <tr><td>D13</td><td>Production API base URL</td><td>Local emulator: <code>http://10.0.2.2:3001/api/v3/</code>. Production: <code>https://&lt;portal-domain&gt;/api/v3/</code> (domain to be supplied).</td><td>The Postman collection only has a <code>{{baseUrl}}</code> variable.</td><td><span class="tag info">Confirm in P4</span></td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="stack">
+    <div class="eyebrow">Section 3</div>
+    <h2>Tech stack &amp; folder structure</h2>
+    <p class="lede">The app uses DataLynkr's toolchain versions because this machine already builds them. The web portal's data-layer choices (TanStack Query, axios) are kept so the services port across almost unchanged.</p>
+    <div class="grid2">
+      <div class="card">
+        <h3>Dependencies</h3>
+        <ul>
+          <li><b>Core</b>: react-native 0.81.6, react 19.1.x, TypeScript 5.8 (strict)</li>
+          <li><b>Navigation</b>: @react-navigation/native 7, native-stack 7, bottom-tabs 7, react-native-screens <b>4.24.0</b> (pinned, like DataLynkr), react-native-safe-area-context 5</li>
+          <li><b>Data</b>: axios 1.x, @tanstack/react-query 5, zustand 5, dayjs</li>
+          <li><b>Storage</b>: react-native-keychain (tokens), @react-native-async-storage/async-storage (non-secret prefs and selected org)</li>
+          <li><b>UI</b>: react-native-svg, lucide-react-native, react-native-linear-gradient (orange button), react-native-svg-transformer (logo)</li>
+          <li><b>Config</b>: react-native-dotenv (<code>API_BASE_URL</code>), babel-plugin-module-resolver (<code>@/</code> alias)</li>
+          <li><b>Later drafts</b>: react-native-gifted-charts (analytics), @react-native-documents/picker + xlsx (uploads)</li>
+        </ul>
+      </div>
+      <div class="card">
+        <h3>Folder structure (<code>TallyDexMobile/src</code>)</h3>
+<pre style="margin:0;font-size:12px;line-height:1.5;color:var(--text-2);white-space:pre-wrap">api/          client.ts (axios + interceptors), auth.ts, dashboard.ts,
+              modules.ts, organizations.ts, types.ts
+components/   AppText, AppHeader, ScopeBar, sidebar/, BottomTabBar,
+              Button, TextField, SelectSheet, SegmentedTabs,
+              FilterBar, FilterSheet, Card, StatTile, ListRow,
+              Badge, EmptyState, ErrorState, Skeleton, DialogHost, Toast
+constants/    moduleCodes.ts, strings.ts, routes.ts
+theme/        colors.ts, typography.ts, spacing.ts, index.ts
+navigation/   RootNavigator, AuthStack, MainStack, MainTabs,
+              menu.ts (port of Layout.getMenuItems), navigationRef, types
+screens/      auth/ dashboard/ account/ admin/ upload/ mapping/
+              reports/ dev/ComponentGallery
+store/        authStore.ts, orgStore.ts, sidebarStore.ts
+services/     secureStorage.ts, permissions.ts
+utils/        format.ts (dates, ₹), dialog.ts, log.ts
+assets/       logo.svg, fonts/</pre>
+      </div>
+    </div>
+  </section>
+
+  <section id="tokens">
+    <div class="eyebrow">Section 4</div>
+    <h2>Theme tokens</h2>
+    <p class="lede">Taken from <code>TallyDEx_/nav/app.css</code> and <code>login/styles.css</code>. In the app they live in <code>src/theme/colors.ts</code>. Screens use the token names and never hex values.</p>
+    <h3>Colour (light)</h3>
+    <div class="swatches">
+      <div class="sw"><i style="background:#E46C0C"></i><div><b>accent</b><span>#E46C0C</span></div></div>
+      <div class="sw"><i style="background:#F07E22"></i><div><b>accentHi</b><span>#F07E22</span></div></div>
+      <div class="sw"><i style="background:#C95F0A"></i><div><b>accentLo</b><span>#C95F0A</span></div></div>
+      <div class="sw"><i style="background:rgba(228,108,12,.09)"></i><div><b>accentTint</b><span>accent @ 9%</span></div></div>
+      <div class="sw"><i style="background:rgba(253,238,226,.38);"></i><div><b>fieldTint</b><span>#FDEEE2 @ 38%</span></div></div>
+      <div class="sw"><i style="background:#000000"></i><div><b>chrome</b><span>#000000</span></div></div>
+      <div class="sw"><i style="background:#8E8E93"></i><div><b>chromeMuted</b><span>#8E8E93</span></div></div>
+      <div class="sw"><i style="background:#071523"></i><div><b>navy</b><span>#071523</span></div></div>
+      <div class="sw"><i style="background:#EEF0F3"></i><div><b>canvas</b><span>#EEF0F3</span></div></div>
+      <div class="sw"><i style="background:#FFFFFF"></i><div><b>surface</b><span>#FFFFFF</span></div></div>
+      <div class="sw"><i style="background:#F7F8FA"></i><div><b>surface2</b><span>#F7F8FA</span></div></div>
+      <div class="sw"><i style="background:#EFF1F5"></i><div><b>surface3</b><span>#EFF1F5</span></div></div>
+      <div class="sw"><i style="background:#E2E5EA"></i><div><b>line</b><span>#E2E5EA</span></div></div>
+      <div class="sw"><i style="background:#0C0F14"></i><div><b>text</b><span>#0C0F14</span></div></div>
+      <div class="sw"><i style="background:#4B525E"></i><div><b>text2</b><span>#4B525E</span></div></div>
+      <div class="sw"><i style="background:#7B8494"></i><div><b>text3</b><span>#7B8494</span></div></div>
+      <div class="sw"><i style="background:#A2AAB8"></i><div><b>text4</b><span>#A2AAB8</span></div></div>
+      <div class="sw"><i style="background:#0B8A5F"></i><div><b>ok / okBg</b><span>#0B8A5F / #E6F6F0</span></div></div>
+      <div class="sw"><i style="background:#A75B0C"></i><div><b>warn / warnBg</b><span>#A75B0C / #FDF2E4</span></div></div>
+      <div class="sw"><i style="background:#C93838"></i><div><b>danger / dangerBg</b><span>#C93838 / #FDECEC</span></div></div>
+      <div class="sw"><i style="background:#3552C4"></i><div><b>info / infoBg</b><span>#3552C4 / #ECEFFC</span></div></div>
+    </div>
+    <div class="grid2" style="margin-top:14px">
+      <div class="card">
+        <h3>Type scale (sp)</h3>
+        <div class="tbl-wrap" style="box-shadow:none"><table>
+          <thead><tr><th>Token</th><th>Font</th><th>Size / weight</th><th>Use</th></tr></thead>
+          <tbody>
+            <tr><td>display</td><td>Wix Display</td><td>24 / 700</td><td>Dashboard greeting, login brand</td></tr>
+            <tr><td>statValue</td><td>Wix Display</td><td>24 / 700, tabular</td><td>Stat tile numbers</td></tr>
+            <tr><td>headerTitle</td><td>Inter</td><td>17 / 600</td><td>AppHeader title</td></tr>
+            <tr><td>title</td><td>Inter</td><td>15 / 600</td><td>Card and section titles, row primary</td></tr>
+            <tr><td>body</td><td>Inter</td><td>14 / 400–500</td><td>Body text, field input</td></tr>
+            <tr><td>label</td><td>Inter</td><td>12 / 600</td><td>Field labels, tab labels</td></tr>
+            <tr><td>caption</td><td>Inter</td><td>12 / 500</td><td>Secondary row text, hints</td></tr>
+            <tr><td>overline</td><td>Inter</td><td>10.5 / 700, caps, +1px</td><td>Eyebrows, sidebar section labels</td></tr>
+            <tr><td>button</td><td>Inter</td><td>15 / 700</td><td>Buttons</td></tr>
+          </tbody>
+        </table></div>
+      </div>
+      <div class="card">
+        <h3>Spacing, shape, elevation</h3>
+        <ul>
+          <li><b>Spacing scale</b>: 4 · 8 · 12 · 16 · 20 · 24 · 32. Screen gutter is <b>16</b>, gap between sections is <b>16</b>, card padding is <b>16</b>.</li>
+          <li><b>Radii</b>: card 14 · control (field, button) 10 · small (chip, icon button) 8 · pill 999.</li>
+          <li><b>Elevation</b>: cards use a 1px <code>line</code> border with elevation 1. Sheets and dialogs use elevation 8 and a top radius of 20.</li>
+          <li><b>Heights</b>: header 56 (plus status bar), scope bar 36, tab bar 60 (plus inset), button 48 (52 on auth screens), small button 36, field 52, list row ≥ 64.</li>
+          <li><b>Icons</b>: Lucide, stroke 2. Header 22 · sidebar 20 · tab bar 22 · inline 16.</li>
+          <li><b>Touch target</b>: at least 48×48dp (use <code>hitSlop</code> on small icons).</li>
+          <li><b>Motion</b>: 280ms sidebar and 200ms press, eased like <code>cubic-bezier(.16,1,.3,1)</code>.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="rules">
+    <div class="eyebrow">Section 5</div>
+    <h2>Screen rules</h2>
+    <p class="lede">Every screen follows these rules so the app stays consistent. Phase 1 expands them in the design sheet with do/don't examples. Phase 7 checks every screen against them.</p>
+
+    <h3>Anatomy</h3>
+    <div class="phones" style="margin-bottom:18px">
+      <div>
+        <div class="phone">
+          <div class="ph-status"></div>
+          <div class="ph-head"><span class="ic"></span>Dashboard<span class="sp"></span><span class="dot"></span></div>
+          <div class="ph-scope"><i></i>Organization <b>Acme Corporation</b></div>
+          <div class="ph-body">
+            <div class="ph-greet">Welcome back, Rohith<small>Here's what's happening with your account today.</small></div>
+            <div class="ph-row"><div class="ph-card">Organizations<b>3</b></div><div class="ph-card">My Modules<b>7</b></div></div>
+            <div class="ph-row"><div class="ph-card">Tally Connections<b>2</b></div><div class="ph-card">Last Login<b>14 Oct</b></div></div>
+          </div>
+          <div class="ph-tabs"><span class="on">Home</span><span>Mapping</span><span>Reports</span><span>Activity</span></div>
+        </div>
+        <div class="ph-cap">Tab root: menu icon, scope bar, cards on the canvas, footer tabs.</div>
+      </div>
+      <div>
+        <div class="phone">
+          <div class="ph-status"></div>
+          <div class="ph-head"><span class="ic"></span>Sales · All<span class="sp"></span><span class="dot"></span></div>
+          <div class="ph-scope"><i></i>Organization <b>Acme Corporation</b></div>
+          <div class="ph-body">
+            <div class="ph-chips"><span class="on">01 Apr – 31 Oct</span><span>Company · 1</span><span>Filters</span></div>
+            <div class="ph-card"><b style="font-size:11px;font-family:var(--font-ui)">ABC Dealers</b>INV/0042 · 12 Oct · ₹ 14,250</div>
+            <div class="ph-card"><b style="font-size:11px;font-family:var(--font-ui)">Sri Ramanuja Traders</b>INV/0041 · 11 Oct · ₹ 8,900</div>
+            <div class="ph-card"><b style="font-size:11px;font-family:var(--font-ui)">Metro Distributors</b>INV/0040 · 11 Oct · ₹ 22,600</div>
+          </div>
+          <div class="ph-tabs"><span>Home</span><span>Mapping</span><span class="on">Reports</span><span>Activity</span></div>
+        </div>
+        <div class="ph-cap">Report list: filter chips, then card rows. Tapping a row opens a detail sheet.</div>
+      </div>
+      <div>
+        <div class="phone">
+          <div class="ph-status"></div>
+          <div class="ph-head"><span class="ic"></span>Dashboard</div>
+          <div class="ph-body"></div>
+          <div class="ph-dim"></div>
+          <div class="ph-side">
+            <div class="logo">Tally <b>DEx</b></div>
+            <div class="prof">Rohith<small>rohith@acme.in · OWNER</small></div>
+            <div class="org">ORGANIZATION</div>
+            <div class="orgbox">Acme Corporation ▾</div>
+            <div class="it on">Dashboard</div>
+            <div class="it">User Management</div>
+            <div class="it">Tally Connections</div>
+            <div class="it">Upload ▾</div>
+            <div class="it" style="color:#fff">Mapping ▴</div>
+            <div class="subit">Dealer Mapping</div>
+            <div class="subit">Stock Item Mapping</div>
+            <div class="it">Sales ▾</div>
+            <div class="logout">Log out</div>
+          </div>
+        </div>
+        <div class="ph-cap">Sidebar: DataLynkr structure in TallyDex colours, with the orange active bar.</div>
+      </div>
+    </div>
+
+    <h3>Structure &amp; navigation</h3>
+    <ol class="rules">
+      <li><b>Fixed layers, top to bottom:</b> status bar → <code>AppHeader</code> → optional <code>ScopeBar</code> (tenant screens only) → optional <code>FilterBar</code> / <code>SegmentedTabs</code> → scrolling body → optional sticky action footer → <code>BottomTabBar</code> (tab roots only). Nothing else is pinned.</li>
+      <li><b>The header title is the menu label.</b> The title in the header matches the sidebar label exactly. The body has no repeated H1, except the Dashboard greeting.</li>
+      <li><b>Left header icon:</b> top-level screens (opened from the sidebar or tabs) show the <b>menu</b> icon. Pushed screens (detail, form, sub-page) show <b>back</b>. Never both.</li>
+      <li><b>At most 2 header actions</b> on the right, 22dp icons with 48dp touch targets. Anything more goes in a ⋯ overflow sheet.</li>
+      <li><b>One global sidebar.</b> Screens never render their own drawer. The sidebar is built from <code>navigation/menu.ts</code>, which is the only place that decides which items a role or module unlocks.</li>
+      <li><b>Max two menu levels</b> (D7). Groups expand like accordions, one open at a time, and the group holding the current screen opens by default.</li>
+      <li><b>Android back:</b> closes an open sheet or dialog first, then the sidebar, then pops the stack. On a tab root that isn't Home it goes to Home. On Home it shows the Exit dialog.</li>
+      <li><b>Footer tabs hide</b> on pushed screens, forms and detail views (same rule as DataLynkr's <code>ordersTabBarStyle</code>).</li>
+    </ol>
+
+    <h3>Layout &amp; content</h3>
+    <ol class="rules" start="9" style="counter-reset:r 8">
+      <li><b>Canvas and cards:</b> the screen background is <code>canvas</code>. Content sits in white <code>Card</code>s (radius 14, 1px <code>line</code> border) with a 16dp gutter and 16dp gaps.</li>
+      <li><b>No web tables on phones.</b> A table becomes a list of card rows: one primary line (name), one secondary line (at most 3 key fields separated by ·), and a right-aligned value or badge. Tapping a row opens a detail sheet with every column as key/value pairs.</li>
+      <li><b>Numbers:</b> tabular figures, right-aligned. Currency is <code>₹ 1,23,456.00</code> (en-IN). Dates are <code>DD MMM YYYY</code>, and times <code>DD MMM, HH:mm</code>.</li>
+      <li><b>Tabs inside a screen:</b> 2–3 options use a <code>SegmentedTabs</code> control. 4 or more use a horizontally scrolling tab strip (for example, User Management).</li>
+      <li><b>Filters:</b> a row of chips under the header shows the active filters (date range first). A "Filters" chip with a count badge opens a bottom sheet with Apply and Reset. An empty selection means "all", as in the API.</li>
+      <li><b>Lists paginate</b> with infinite scroll. Page size is 20, using the API's <code>page</code> and <code>limit</code>. Pull-to-refresh is on every list and the dashboard.</li>
+      <li><b>Scope bar:</b> every screen that sends <code>x-organization-id</code> shows the active organization. Switching organization resets the screen's data and filters.</li>
+    </ol>
+
+    <h3>States &amp; feedback</h3>
+    <ol class="rules" start="16" style="counter-reset:r 15">
+      <li><b>No blank screens.</b> Every data screen handles four states: loading (skeleton shaped like the content), empty (icon, title, hint, optional action), error (message and Retry), and no access (lock icon and "Ask your administrator").</li>
+      <li><b>Permissions are deny-by-default.</b> Until the organization's modules have loaded, gated menu items are hidden. A gated route opened without access shows the no-access state.</li>
+      <li><b>Feedback:</b> success uses a toast (bottom, 3s). Form errors appear inline under the field. Server errors appear in a banner at the top of the form. Destructive actions always confirm with a dialog that has a red action button.</li>
+      <li><b>One primary button per screen</b> (orange gradient, 48dp, full width on forms, pinned in a sticky footer when the form scrolls). Secondary actions use the dark or ghost style.</li>
+    </ol>
+
+    <h3>Forms &amp; inputs</h3>
+    <ol class="rules" start="20" style="counter-reset:r 19">
+      <li><b>Text fields</b> follow the login design: the label sits on the top border (12/600), the field has a warm <code>fieldTint</code> fill, turns white with an orange border and 4dp orange ring when focused, and shows a red asterisk when required. Password fields have a show/hide eye.</li>
+      <li><b>Pickers</b> never use the native spinner. Single and multi selects open a bottom sheet with search (when there are more than 8 options) and a sticky Done button.</li>
+      <li><b>Keyboard:</b> forms scroll so the focused field and primary button stay visible. The return key moves to the next field, and the last field submits.</li>
+    </ol>
+
+    <h3>Code conventions (from DataLynkr)</h3>
+    <ol class="rules" start="23" style="counter-reset:r 22">
+      <li><b>Tokens only:</b> no hex literals or raw font names in screens. Use <code>theme.colors.*</code>, <code>theme.type.*</code> and <code>theme.space.*</code>.</li>
+      <li><b>Wrappers:</b> use <code>AppText</code> / <code>AppTextInput</code> instead of RN <code>Text</code> / <code>TextInput</code>, <code>showDialog</code> instead of <code>Alert.alert</code>, <code>navigateTo</code> from <code>navigationRef</code>, and <code>log</code> instead of <code>console</code>.</li>
+      <li><b>System bars:</b> the status bar matches the header (chrome, light content). Every <code>&lt;Modal&gt;</code> sets <code>navigationBarTranslucent</code> and pads its bottom by <code>insets.bottom</code>.</li>
+      <li><b>Accessibility:</b> every pressable has an <code>accessibilityLabel</code> and a <code>testID</code> (<code>screen-element</code>). Text scales with the system font up to 1.3×.</li>
+    </ol>
+  </section>
+
+  <section id="nav">
+    <div class="eyebrow">Section 6</div>
+    <h2>Navigation map</h2>
+    <p class="lede">A port of <code>Layout.getMenuItems()</code> with the Reports group flattened (D7). Items in [brackets] are module-gated. The profile card at the top of the sidebar opens Profile. Change Password and Log out are in the sidebar footer.</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Sidebar item</th><th>SUPEROWNER</th><th>SUPEROWNER (connected)</th><th>OWNER</th><th>USER</th><th>Module code</th></tr></thead>
+      <tbody>
+        <tr><td>Dashboard</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+        <tr><td>User Management</td><td>✓</td><td>✓</td><td>✓</td><td>—</td><td>—</td></tr>
+        <tr><td>Tally Connections</td><td>—</td><td>[✓]</td><td>[✓]</td><td>[✓]</td><td>tally_connections</td></tr>
+        <tr><td>Module Management</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>User-Org Report</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>Upload › Dealer · Stock Item</td><td>—</td><td>[✓]</td><td>[✓]</td><td>[✓]</td><td>HO_Dealers · HO_Stockitem</td></tr>
+        <tr><td>Mapping › Dealer · Stock Item</td><td>—</td><td>[✓]</td><td>[✓]</td><td>[✓]</td><td>Map_Dealer · Map_Stockitem</td></tr>
+        <tr><td>Sales › All · Mapped · Analytics</td><td>—</td><td>[✓]</td><td>[✓]</td><td>[✓]</td><td>SecondarySales · SSV_SalesAnalytics</td></tr>
+        <tr><td>Closing Stock › All · Mapped · Analytics</td><td>—</td><td>[✓]</td><td>[✓]</td><td>[✓]</td><td>ClosingStock · ClosingStock_Analytics</td></tr>
+        <tr><td>UDF Configurations</td><td>✓</td><td>✓</td><td>✓</td><td>—</td><td>—</td></tr>
+        <tr><td>Connect Organization</td><td>✓</td><td>—</td><td>—</td><td>—</td><td>—</td></tr>
+        <tr><td>User Activity</td><td>✓</td><td>✓</td><td>✓</td><td>✓</td><td>—</td></tr>
+        <tr><td><i>Switch to SUPEROWNER</i></td><td>—</td><td>✓ (sidebar footer button)</td><td>—</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table></div>
+    <h3>Navigator tree</h3>
+<pre class="card" style="font-size:12.5px;line-height:1.55;white-space:pre-wrap;margin:0;color:var(--text-2)">RootNavigator  (splash until auth is restored from keychain)
+├─ AuthStack:  Login · ForgotPassword · ChangePassword(firstLogin)
+└─ MainStack   (GlobalSidebar + DialogHost + Toast mounted above it)
+   ├─ MainTabs  (role-aware, D2)
+   │   ├─ HomeTab      → Dashboard
+   │   ├─ MappingTab   → MappingHub (Dealer / Stock Item)        | SUPEROWNER: UsersTab → UserManagement
+   │   ├─ ReportsTab   → ReportsHub (Sales / Closing Stock)      | SUPEROWNER: ModulesTab → ModuleManagement
+   │   └─ ActivityTab  → UserActivity
+   └─ pushed screens: Profile · ChangePassword · UserManagement · ModuleManagement · UserOrgReport
+      · UDFConfig · UDFConfigDetail · ConnectOrganization · TallyConnections · DealerUpload · StockItemUpload
+      · DealerMapping · StockItemMapping · SalesAll · SalesMapped · SalesAnalytics
+      · ClosingStockAll · ClosingStockMapped · ClosingStockAnalytics · (dev) ComponentGallery</pre>
+  </section>
+
+  <section id="inventory">
+    <div class="eyebrow">Section 7</div>
+    <h2>Screen inventory</h2>
+    <p class="lede"><span class="tag ok" style="margin:0">Functional</span> means wired to the API in draft 1. <span class="tag mute" style="margin:0">Skeleton</span> means the real header, scope bar and tabs/filters as built components, an empty state, correct gating and navigation, with no data calls yet.</p>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Mobile screen</th><th>Web source</th><th>Roles / module</th><th>Draft 1</th><th>Notes</th></tr></thead>
+      <tbody>
+        <tr><td>Splash</td><td>—</td><td>all</td><td><span class="tag ok">Functional</span></td><td>Restore session; black bg + logo</td></tr>
+        <tr><td>Login</td><td>auth/LoginPage</td><td>all</td><td><span class="tag ok">Functional</span></td><td>POST /auth/login; isFirstLogin → Change Password</td></tr>
+        <tr><td>Forgot Password</td><td>auth/ForgotPasswordPage</td><td>all</td><td><span class="tag ok">Functional</span></td><td>POST /auth/forgot-password</td></tr>
+        <tr><td>Change Password</td><td>auth/ChangePasswordPage</td><td>all</td><td><span class="tag ok">Functional</span></td><td>PUT /auth/change-password; first-login variant can't be skipped</td></tr>
+        <tr><td>Dashboard</td><td>DashboardPage</td><td>all</td><td><span class="tag ok">Functional</span></td><td>GET /dashboard/stats; 4 role cards; tap → linked screen</td></tr>
+        <tr><td>Profile</td><td>auth/ProfilePage</td><td>all</td><td><span class="tag ok">Functional</span></td><td>View + edit name/phone (PUT /auth/profile)</td></tr>
+        <tr><td>User Activity</td><td>auth/UserActivityPage</td><td>all</td><td><span class="tag ok">Functional</span></td><td>GET /auth/activity, infinite list</td></tr>
+        <tr><td>Connect Organization</td><td>superowner/ConnectOrganizationPage</td><td>SUPEROWNER</td><td><span class="tag ok">Functional</span></td><td>GET /organizations; Connect → connected mode (needed to test menus)</td></tr>
+        <tr><td>User Management</td><td>superowner/UserManagementPage</td><td>SO, OWNER</td><td><span class="tag mute">Skeleton</span></td><td>Scrolling tab strip: Create User, User List, Modules…</td></tr>
+        <tr><td>Module Management</td><td>superowner/ModuleManagementPage</td><td>SO</td><td><span class="tag mute">Skeleton</span></td><td></td></tr>
+        <tr><td>User-Org Report</td><td>superowner/UserOrgReportPage</td><td>SO</td><td><span class="tag mute">Skeleton</span></td><td></td></tr>
+        <tr><td>UDF Configurations (+ detail)</td><td>superowner/UDFConfig*</td><td>SO, OWNER</td><td><span class="tag mute">Skeleton</span></td><td></td></tr>
+        <tr><td>Tally Connections</td><td>superowner/TallyConnectionsPage</td><td>tally_connections</td><td><span class="tag mute">Skeleton</span></td><td>Status filter chip</td></tr>
+        <tr><td>Upload · Dealer / Stock Item</td><td>upload/*</td><td>HO_Dealers / HO_Stockitem</td><td><span class="tag mute">Skeleton</span></td><td>File-pick card placeholder</td></tr>
+        <tr><td>Mapping · Dealer / Stock Item</td><td>mapping/*</td><td>Map_Dealer / Map_Stockitem</td><td><span class="tag mute">Skeleton</span></td><td>Stock Item: Manual / Auto segmented</td></tr>
+        <tr><td>Sales · All / Mapped / Analytics</td><td>ssv_reports/*</td><td>SecondarySales / SSV_SalesAnalytics</td><td><span class="tag mute">Skeleton</span></td><td>Date-range + filter chips</td></tr>
+        <tr><td>Closing Stock · All / Mapped / Analytics</td><td>ssv_reports/item_closing_balance/*</td><td>ClosingStock / ClosingStock_Analytics</td><td><span class="tag mute">Skeleton</span></td><td></td></tr>
+        <tr><td>Component Gallery</td><td>—</td><td>dev builds only</td><td><span class="tag info">Dev</span></td><td>Every component in every state</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  <section id="api">
+    <div class="eyebrow">Section 8</div>
+    <h2>API contract (draft 1)</h2>
+    <p class="lede">From <code>TallyDex API v3.postman_collection.json</code> and <code>TallyDex-FE/src/types</code>. Every response uses the envelope <code>{ success, message, data, timestamp }</code>. Error text is read from <code>error.response.data.message</code>.</p>
+    <div class="grid2">
+      <div class="card">
+        <h3>Login</h3>
+<pre style="margin:0;font-size:12px;line-height:1.5;white-space:pre-wrap;color:var(--text-2)">POST {baseUrl}/auth/login        (no auth)
+{ "email": "…", "password": "…" }
+
+200 → data: {
+  accessToken, refreshToken,
+  user: { id, email, firstName, role: 'SUPEROWNER'|'OWNER'|'USER',
+          phone?, isFirstLogin? },
+  organizations?: [{ id, name, dbSchema }]
+}
+
+POST /auth/refresh-token  { refreshToken }  → same data shape</pre>
+      </div>
+      <div class="card">
+        <h3>Other draft-1 calls</h3>
+        <ul>
+          <li><code>POST /auth/forgot-password</code> <code>{ email }</code></li>
+          <li><code>PUT /auth/change-password</code> <code>{ currentPassword, newPassword, confirmPassword }</code>. A 401 here means a wrong password, so it must <b>not</b> trigger refresh or logout.</li>
+          <li><code>PUT /auth/profile</code> <code>{ firstName?, phone? }</code> → <code>data.user</code></li>
+          <li><code>GET /auth/activity?page&amp;limit</code> → <code>items[]</code> plus <code>pagination</code></li>
+          <li><code>GET /dashboard/stats</code> → role, totalUsers, newUsersLast30Days, totalOrganizations, newOrganizationsLast30Days, totalModules, activeTallyConnections, activeUsersLast24Hours, lastLoginAt</li>
+          <li><code>GET /modules/organization/:orgId</code> → <code>data.modules[] { code, status }</code></li>
+          <li><code>GET /organizations?page&amp;limit</code> (SUPEROWNER connect list)</li>
+          <li>Tenant calls send the header <code>x-organization-id: {selectedOrg.id}</code>. The axios interceptor adds it when a request is marked <code>tenant: true</code>.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section id="phases">
+    <div class="eyebrow">Section 9</div>
+    <h2>Phases &amp; prompts</h2>
+    <p class="lede">Paste one prompt per message. Wait for the check-in at the end of each phase before moving on.</p>
+
+    <!-- P1 -->
+    <div class="phase" id="p1">
+      <div class="phase-head"><div class="phase-num">P1</div><div><h3>Design sheet</h3><p>Turn sections 4–7 into a visual design sheet: tokens, components and full-screen mockups. No app code yet.</p></div></div>
+      <div class="phase-body">
+        <div class="cols">
+          <div><h4>Deliverables</h4><ul><li><code>docs/design-sheet.html</code> (self-contained)</li><li>Decisions D1–D3 confirmed and recorded in this plan</li></ul></div>
+          <div><h4>Done when</h4><ul class="check"><li>Every component in §3's list is drawn in all its states</li><li>6 full-screen mockups at 360×800</li><li>Every rule in §5 has a do/don't example</li></ul></div>
+        </div>
+        <div class="prompt"><div class="prompt-bar">Prompt 1 of 8<button class="copy" type="button">Copy</button></div>
+<pre class="ptext">Phase 1 — Design sheet for the TallyDex Android app.
+
+Read C:\Users\johna\Desktop\TallyDex-app\TallyDex-Mobile-Plan.html in full first (it holds the audit, decisions, tokens, screen rules, navigation map and screen inventory). Re-open these references when you need exact values:
+- Theme: TallyDex-app\TallyDEx_\nav\app.css, nav\index.html (sidebar styles), login\styles.css, login\login.html
+- Mobile skeleton: C:\Users\johna\Desktop\DataLynkr-app\src\components\StatusBarTopBar.tsx, AppSidebar.tsx (styles from ~line 1210), FooterTabBar.tsx, screens\logins\Login.tsx
+- Functionality: C:\Users\johna\Desktop\TallyDex-FE\src\components\Layout.tsx, src\pages\DashboardPage.tsx, src\pages\auth\*
+
+Step 1: Ask me to confirm decisions D1 (header colour), D2 (footer tabs) and D3 (no OTP/sign-up), with your recommendation for each. Wait for my answer.
+
+Step 2: Create C:\Users\johna\Desktop\TallyDex-app\docs\design-sheet.html, one self-contained file (Google Fonts allowed: Inter, Wix Madefor Display). It must contain:
+1. Colour tokens as swatches, each with the RN token name it will have in src/theme/colors.ts. List the dark values in a separate table marked "not in draft 1".
+2. Type scale, spacing, radii, elevation, icon sizes and touch targets, exactly as in plan section 4.
+3. Component specs, each drawn at true dp scale (1dp = 1px) with every state (default/pressed/disabled/focused/error/loading where relevant): AppHeader (menu and back variants, 0–2 actions, overflow), Sidebar (logo row, profile card, ORGANIZATION picker, item, active item with orange bar, expanded group with sub-items, footer with Change Password / Log out / "Switch to SUPEROWNER"), BottomTabBar, ScopeBar, Card, StatTile, ListRow, Buttons (primary gradient/dark/ghost/danger; 48 and 36 heights), TextField (floating label as in the login design, password eye), SelectSheet (single + multi with search), SegmentedTabs and scrolling TabStrip, FilterBar chips + FilterSheet, Badge (ok/warn/danger/info/accent/mute), EmptyState, ErrorState, NoAccessState, Skeleton loaders, Dialog (confirm + destructive), Toast.
+4. Every screen rule from plan section 5, each with a small do/don't illustration.
+5. Full-screen mockups in 360x800 phone frames: Login, Forgot Password, Dashboard (OWNER, with tabs), Sidebar open (OWNER, Mapping expanded), Sales · All with the filter sheet open, Profile. Use realistic sample text.
+Name each mock element with the component name it will become, so Phase 3 can map one-to-one.
+
+Do not create the React Native project in this phase. When done, open the sheet, list any changes you think the plan needs, and update the plan file's decision table with my answers to D1–D3.</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- P2 -->
+    <div class="phase" id="p2">
+      <div class="phase-head"><div class="phase-num">P2</div><div><h3>Scaffold the project</h3><p>Create the RN app with fonts, aliases, env config and Android settings, and prove it runs on the emulator.</p></div></div>
+      <div class="phase-body">
+        <div class="cols">
+          <div><h4>Deliverables</h4><ul><li><code>TallyDexMobile/</code> RN 0.81.6 TypeScript project</li><li>Folder structure from §3, theme files stubbed</li><li><code>CLAUDE.md</code> for the new project</li></ul></div>
+          <div><h4>Done when</h4><ul class="check"><li><code>tsc --noEmit</code> passes with 0 errors and lint is clean</li><li>Debug APK runs on the emulator, showing "Tally DEx" in Wix Madefor Display</li><li><code>.env.example</code> committed, <code>.env</code> ignored</li></ul></div>
+        </div>
+        <div class="prompt"><div class="prompt-bar">Prompt 2 of 8<button class="copy" type="button">Copy</button></div>
+<pre class="ptext">Phase 2 — Scaffold the TallyDex React Native project.
+
+Read C:\Users\johna\Desktop\TallyDex-app\TallyDex-Mobile-Plan.html (sections 2, 3 and 5) and C:\Users\johna\Desktop\TallyDex-app\docs\design-sheet.html. Use C:\Users\johna\Desktop\DataLynkr-app as the toolchain reference (package.json, babel.config.js, metro.config.js, tsconfig.json, android\build.gradle, android\app\build.gradle, .prettierrc.js, eslint.config.js, CLAUDE.md).
+
+1. Confirm decision D12 with me (folder C:\Users\johna\Desktop\TallyDex-app\TallyDexMobile, package com.itcatalyst.tallydex, display name "Tally DEx"), then create the project with React Native 0.81.6 and TypeScript, using the same CLI version as DataLynkr (@react-native-community/cli 20.0.0).
+2. Install the dependencies listed in plan section 3 ("Later drafts" excluded). Pin react-native-screens to 4.24.0. If the install needs --legacy-peer-deps, say so in CLAUDE.md.
+3. Config: TypeScript strict; "@/..." alias to src via babel-plugin-module-resolver + tsconfig paths; react-native-dotenv exposing API_BASE_URL with typings; .env.example containing API_BASE_URL=http://10.0.2.2:3001/api/v3/; .env in .gitignore; Prettier + ESLint matching DataLynkr's style, including a lint rule that flags hex colour literals in src/screens and src/components.
+4. Android: cleartext HTTP allowed only for 10.0.2.2 and localhost via a debug-only network_security_config; app label "Tally DEx"; window background #000000 so cold start doesn't flash white; copy DataLynkr's 16 KB page-size alignment setup from its android/build.gradle (explain what you copied); keep the NDK version the same as DataLynkr.
+5. Fonts: copy WixMadeforDisplay-SemiBold.ttf and -Bold.ttf from DataLynkr-app\android\app\src\main\assets\fonts; add Inter 400/500/600/700 static TTFs (official rsms/inter release). Link with react-native.config.js + npx react-native-asset, and expose family names in src/theme/typography.ts the way DataLynkr's src/constants/fonts.ts does.
+6. Create the src/ folder structure from plan section 3 with empty index files. Put the colour tokens from plan section 4 into src/theme/colors.ts now (light + dark objects, light exported as default).
+7. Temporary App.tsx: canvas background, "Tally DEx" in Wix Madefor Display 600 with "DEx" in accent, and one line of Inter text, to prove both fonts load.
+8. Write TallyDexMobile/CLAUDE.md: commands, folder map, the screen rules as a checklist (link to the plan), and the "use these, not those" table adapted from DataLynkr (only the rows that apply).
+
+Verify: typecheck 0 errors, lint clean, assembleDebug builds, the app installs and runs on the emulator. Show me a screenshot. Don't build any screens yet.</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- P3 -->
+    <div class="phase" id="p3">
+      <div class="phase-head"><div class="phase-num">P3</div><div><h3>Theme &amp; core components</h3><p>Build every component from the design sheet, plus a dev-only gallery screen to check them.</p></div></div>
+      <div class="phase-body">
+        <div class="cols">
+          <div><h4>Deliverables</h4><ul><li><code>src/theme/*</code> complete</li><li>All components from §3's list</li><li><code>screens/dev/ComponentGallery.tsx</code></li><li><code>utils/dialog.ts</code>, toast service, <code>format.ts</code></li></ul></div>
+          <div><h4>Done when</h4><ul class="check"><li>The gallery shows each component in every state, matching the sheet</li><li>No hex values or raw font names outside <code>src/theme</code></li><li>Each component has a smoke test (renders + one interaction)</li></ul></div>
+        </div>
+        <div class="prompt"><div class="prompt-bar">Prompt 3 of 8<button class="copy" type="button">Copy</button></div>
+<pre class="ptext">Phase 3 — Theme and core component library.
+
+Read C:\Users\johna\Desktop\TallyDex-app\TallyDex-Mobile-Plan.html (sections 4 and 5), C:\Users\johna\Desktop\TallyDex-app\docs\design-sheet.html, and TallyDexMobile\CLAUDE.md. The design sheet is the spec: match its sizes, colours and states exactly. Where DataLynkr already solved a mechanic (sidebar animation, swipe-to-close, modal system bars, safe-area padding), read its implementation in C:\Users\johna\Desktop\DataLynkr-app\src\components and reuse the approach, not its colours.
+
+Build in TallyDexMobile/src:
+1. theme/: colors.ts (done in P2, check it), typography.ts (named text styles from plan section 4), spacing.ts (space, radii, elevation, sizes), index.ts exporting a single `theme` object plus a useTheme() hook (light only, but shaped so dark can be added later).
+2. components/: AppText + AppTextInput (fixed font families, max font scale 1.3), AppHeader (menu|back|none left; title; 0–2 right actions; overflow; sets the status bar), ScopeBar, Card, StatTile, ListRow, Button (primary gradient with react-native-linear-gradient, dark, ghost, danger; sizes 48/36; loading state), TextField (floating label, field tint, orange focus ring, error text, password eye), SelectSheet (single/multi, search when there are more than 8 options), SegmentedTabs, TabStrip, FilterBar + FilterSheet, Badge, EmptyState, ErrorState, NoAccessState, Skeleton, BottomSheet base, DialogHost + utils/dialog.ts (showDialog/showConfirm/showError — no Alert.alert), Toast host + toast service.
+   Leave out the Sidebar and BottomTabBar for now; they're part of the shell in P5.
+3. utils/format.ts: formatINR, formatNumber (en-IN), formatDate (DD MMM YYYY), formatDateTime (DD MMM, HH:mm) with dayjs. utils/log.ts as in DataLynkr.
+4. screens/dev/ComponentGallery.tsx showing every component in every state. For now, render it from App.tsx.
+5. Jest smoke tests: each component renders, and Button/TextField/SelectSheet/SegmentedTabs handle one interaction.
+
+Rules: every pressable gets accessibilityLabel and testID; every Modal uses navigationBarTranslucent and pads by insets.bottom; Lucide icons only. Verify typecheck, lint and jest, then run on the emulator and show screenshots of the gallery (scroll through it). List any place where you departed from the design sheet and why.</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- P4 -->
+    <div class="phase" id="p4">
+      <div class="phase-head"><div class="phase-num">P4</div><div><h3>API layer &amp; authentication</h3><p>axios client, secure session, module permissions, and the four auth screens wired to the real API.</p></div></div>
+      <div class="phase-body">
+        <div class="cols">
+          <div><h4>Deliverables</h4><ul><li><code>api/client.ts</code> with bearer, refresh, tenant header and error normalising</li><li><code>store/authStore.ts</code>, <code>orgStore.ts</code>, <code>services/permissions.ts</code></li><li>Login, Forgot Password and Change Password screens; Splash</li></ul></div>
+          <div><h4>Done when</h4><ul class="check"><li>Login works against the local API for all 3 roles</li><li>Session survives an app restart, and logout clears it</li><li>An expired access token refreshes without the user noticing</li><li>First-login users are forced to change their password</li></ul></div>
+        </div>
+        <div class="prompt"><div class="prompt-bar">Prompt 4 of 8<button class="copy" type="button">Copy</button></div>
+<pre class="ptext">Phase 4 — API client, session and auth screens.
+
+Read C:\Users\johna\Desktop\TallyDex-app\TallyDex-Mobile-Plan.html (sections 2, 7 and 8), the Postman collection C:\Users\johna\Desktop\TallyDex-app\TallyDex API v3.postman_collection.json (Auth, Dashboard and Modules folders), and the web implementation: C:\Users\johna\Desktop\TallyDex-FE\src\services\api.ts, authService.ts, moduleService.ts, src\types\auth.ts, module.ts, dashboard.ts, src\pages\auth\LoginPage.tsx, ForgotPasswordPage.tsx, ChangePasswordPage.tsx. Also read docs\design-sheet.html for the Login and Forgot Password mockups.
+
+First ask me for the production API base URL (decision D13) and test credentials for one SUPEROWNER, one OWNER and one USER. Credentials go in .env only, never in code or git.
+
+Build:
+1. api/client.ts: axios instance (API_BASE_URL, 30s timeout); a request interceptor adding Bearer from memory; per-request `tenant: true` adds x-organization-id from orgStore; response errors normalised to { message, status, isNetwork, isTimeout } using the same messages as the web api.ts. On 401 (except /auth/change-password and /auth/login): one single-flight POST /auth/refresh-token, replay the queued requests, and log out only if the refresh fails.
+2. api/auth.ts, api/modules.ts, api/dashboard.ts, api/organizations.ts typed with the web types (copy them into api/types.ts).
+3. services/secureStorage.ts (react-native-keychain for access and refresh tokens); store/authStore.ts (zustand: user, status 'restoring'|'signedOut'|'signedIn', login, logout, restore); store/orgStore.ts (organizations, selectedOrg persisted in AsyncStorage, superownerConnected flag, setSelectedOrg which refetches modules); services/permissions.ts (hasModule(code), deny-by-default until loaded; SUPEROWNER bypasses like the web ModuleProtectedRoute).
+4. Login flow, same as the web: save the session, select the first organization, fetch org modules for OWNER/USER, then route — isFirstLogin → ChangePassword(firstLogin, no back/skip) → otherwise Main.
+5. Screens (follow the design sheet exactly): Splash (black, logo, while restoring), Login (logo + "Tally DEx" brand, email, password, Login button, Forgot Password link, IT Catalyst footer and app version; no OTP or sign-up per D3), ForgotPassword, ChangePassword (also used later from the sidebar). For now, use a minimal AuthStack and a placeholder signed-in screen showing user, role, selected org and module codes, with a Log out button.
+6. React Query client with sensible defaults (retry 1, staleTime 60s); clear it on logout and on organization change.
+7. Tests: client refresh single-flight (two parallel 401s mean one refresh), the change-password 401 doesn't log out, the permissions deny-by-default, and login routing for isFirstLogin.
+
+Verify on the emulator against the local API (http://10.0.2.2:3001/api/v3/) with all three roles, and show me screenshots of each auth screen and the placeholder screen per role.</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- P5 -->
+    <div class="phase" id="p5">
+      <div class="phase-head"><div class="phase-num">P5</div><div><h3>App shell &amp; navigation</h3><p>Global sidebar, header, footer tabs, organization switching, role and module gating, and back behaviour.</p></div></div>
+      <div class="phase-body">
+        <div class="cols">
+          <div><h4>Deliverables</h4><ul><li><code>navigation/</code> RootNavigator, AuthStack, MainStack, MainTabs, menu.ts, navigationRef</li><li>GlobalSidebar, BottomTabBar, exit dialog</li><li>A placeholder screen registered for every route in §7</li></ul></div>
+          <div><h4>Done when</h4><ul class="check"><li>The menu matches the §6 table for every role, including connected SUPEROWNER</li><li>Switching organization refreshes modules and the menu</li><li>The back button behaves as in R7</li></ul></div>
+        </div>
+        <div class="prompt"><div class="prompt-bar">Prompt 5 of 8<button class="copy" type="button">Copy</button></div>
+<pre class="ptext">Phase 5 — App shell: navigation, sidebar, tabs, gating.
+
+Read C:\Users\johna\Desktop\TallyDex-app\TallyDex-Mobile-Plan.html (sections 2, 5, 6 and 7), docs\design-sheet.html (Sidebar, BottomTabBar, AppHeader, ScopeBar, Dashboard mockup) and TallyDexMobile\CLAUDE.md.
+Functional source of truth for the menu: C:\Users\johna\Desktop\TallyDex-FE\src\components\Layout.tsx (getMenuItems, organization switcher, "Switch to SUPEROWNER"), src\App.tsx (routes + moduleCode), ModuleProtectedRoute.tsx.
+Skeleton reference: C:\Users\johna\Desktop\DataLynkr-app\src\navigation\RootNavigator.tsx, MainStack.tsx, MainTabs.tsx, navigationRef.ts, src\components\AppSidebar.tsx, appSidebarMenu.ts, FooterTabBar.tsx, src\store\GlobalSidebarContext.tsx, and App.tsx (BackHandler + exit modal).
+
+Build:
+1. navigation/menu.ts: a pure function buildMenu(role, superownerConnected, hasModule) that returns the sidebar tree from plan section 6 (2 levels max, Reports flattened into Sales and Closing Stock). Write a unit test per role — SUPEROWNER, connected SUPEROWNER, OWNER, USER — including the module-gated items with modules on and off.
+2. RootNavigator (Splash while restoring → AuthStack or MainStack); MainStack with MainTabs + every pushed route from plan section 7 (typed param lists in navigation/types.ts); navigationRef with navigateTo/navigateWith helpers.
+3. MainTabs: role-aware tabs per D2 as confirmed in P1, using our BottomTabBar component; hidden on pushed screens; hidden entirely if fewer than 2 tabs are allowed.
+4. GlobalSidebar mounted once above the navigator (zustand sidebarStore: open/close/isOpen): slide from left, width min(89%, 340dp), 280ms, swipe-left to close, black panel, scrim. Contents in this order: logo row (tap shows the app version) → profile card (tap → Profile) → ORGANIZATION picker (OWNER/USER with more than 1 org, or connected SUPEROWNER; opens SelectSheet; switching calls orgStore.setSelectedOrg, clears React Query, resets to Home) → menu list with the active orange bar and expandable groups → footer: Change Password, Log out (with confirm), and "Switch to SUPEROWNER" when connected.
+5. AppHeader menu button opens the sidebar on top-level screens; back arrow on pushed screens. ScopeBar on every tenant route (flag the routes in constants/routes.ts).
+6. Gating: hidden menu items for missing modules; a route opened without access renders NoAccessState (deny-by-default while modules load).
+7. Back button: sheet/dialog → sidebar → stack pop → Home tab → Exit dialog (showDialog, not Alert).
+8. Register a placeholder for every screen in the inventory: AppHeader with the exact title, ScopeBar where it applies, EmptyState "Coming in the next phase". P6 replaces these.
+
+Verify with all roles on the emulator: screenshots of the sidebar for SUPEROWNER, OWNER, USER and connected SUPEROWNER, an org switch, and a no-access route. Run typecheck, lint and jest.</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- P6A -->
+    <div class="phase" id="p6a">
+      <div class="phase-head"><div class="phase-num">P6A</div><div><h3>Dashboard &amp; account screens</h3><p>Wire the screens marked Functional in §7: Dashboard, Profile, Change Password (from the menu), User Activity, Connect Organization.</p></div></div>
+      <div class="phase-body">
+        <div class="cols">
+          <div><h4>Deliverables</h4><ul><li>Dashboard with role cards and pull-to-refresh</li><li>Profile (view/edit), User Activity (infinite list + detail sheet)</li><li>Connect Organization (SUPEROWNER)</li></ul></div>
+          <div><h4>Done when</h4><ul class="check"><li>All four states (R16) on each screen</li><li>Stat tiles navigate to the linked screens, as on the web</li><li>A SUPEROWNER can connect, see the OWNER menu, and switch back</li></ul></div>
+        </div>
+        <div class="prompt"><div class="prompt-bar">Prompt 6 of 8 (Phase 6A)<button class="copy" type="button">Copy</button></div>
+<pre class="ptext">Phase 6A — Dashboard and account screens (functional).
+
+Read C:\Users\johna\Desktop\TallyDex-app\TallyDex-Mobile-Plan.html (sections 5, 7 and 8), docs\design-sheet.html (Dashboard and Profile mockups) and TallyDexMobile\CLAUDE.md.
+Web sources to port: C:\Users\johna\Desktop\TallyDex-FE\src\pages\DashboardPage.tsx, src\pages\auth\ProfilePage.tsx, ChangePasswordPage.tsx, UserActivityPage.tsx, src\pages\superowner\ConnectOrganizationPage.tsx, and the matching services and types.
+
+Replace the placeholders with working screens:
+1. Dashboard: greeting card ("Welcome back, {firstName}" in Wix Madefor Display, plus the role subtitle from the web); 2×2 StatTiles with the exact role-specific titles, values, badges and tap targets from DashboardPage.tsx (tiles without a path aren't pressable); skeleton while loading, ErrorState with Retry, pull-to-refresh.
+2. Profile: avatar initial, name, email, role badge, phone, status; Edit puts firstName/phone into TextFields with a sticky Save (PUT /auth/profile), updates authStore and shows a toast. Links to Change Password and User Activity.
+3. Change Password from the sidebar/profile (the P4 screen, back-arrow variant): current/new/confirm fields with inline validation matching the web rules; success toast and back.
+4. User Activity: infinite list of ListRows (activity type + status badge; description; date-time and IP) with pull-to-refresh; tap opens a detail BottomSheet with every field.
+5. Connect Organization (SUPEROWNER): searchable list of organizations; Connect does what the web page does (connected flag, selected org, fetch modules) and lands on Dashboard with the OWNER-style menu; "Switch to SUPEROWNER" in the sidebar reverses it.
+Use React Query for all data (keys include the selected org id where relevant). Add Jest tests for the dashboard role-card mapping and the connect/disconnect state changes. Verify on the emulator for each role and show screenshots, including the loading, empty and error states (simulate the error by stopping the API).</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- P6B -->
+    <div class="phase" id="p6b">
+      <div class="phase-head"><div class="phase-num">P6B</div><div><h3>Module screen skeletons</h3><p>Every remaining screen gets its real mobile layout (tabs, filters, list or form shell) built from shared components, following the rules, with no data calls yet.</p></div></div>
+      <div class="phase-body">
+        <div class="cols">
+          <div><h4>Deliverables</h4><ul><li>14 skeleton screens (§7 rows marked Skeleton)</li><li>A shared <code>ReportScreen</code> and <code>ListScreen</code> template</li><li><code>docs/screen-map.md</code>: each mobile screen → web page → endpoints for draft 2</li></ul></div>
+          <div><h4>Done when</h4><ul class="check"><li>Every screen opens from the sidebar with the correct title, scope bar and gating</li><li>Tabs and filter sheets open and close, and chips reflect the selections</li><li>Empty states explain what will appear</li></ul></div>
+        </div>
+        <div class="prompt"><div class="prompt-bar">Prompt 7 of 8 (Phase 6B)<button class="copy" type="button">Copy</button></div>
+<pre class="ptext">Phase 6B — Skeletons for every module screen.
+
+Read C:\Users\johna\Desktop\TallyDex-app\TallyDex-Mobile-Plan.html (sections 5, 6 and 7), docs\design-sheet.html (Sales · All + filter sheet mockup) and TallyDexMobile\CLAUDE.md. For each screen, open its web page in C:\Users\johna\Desktop\TallyDex-FE\src\pages to read its tabs, filters, form fields and table columns. Don't port the data logic; build the mobile layout.
+
+1. Build two templates first: ListScreen (header, optional scope bar, optional SegmentedTabs/TabStrip, FilterBar, list with empty/loading/error slots, optional sticky primary action) and ReportScreen (ListScreen plus a date-range chip first, a FilterSheet built from a config array, and a row → detail BottomSheet mapping).
+2. Build these screens from the templates (no API calls; empty state titles say what will appear, e.g. "Sales vouchers will appear here"):
+   - User Management: TabStrip with the role-dependent tabs from UserManagementPage.tsx (OWNER vs SUPEROWNER sets)
+   - Module Management, User-Org Report, UDF Configurations (+ detail route), Tally Connections (status filter chip)
+   - Upload · Dealer / Stock Item: "Upload a file" card with a file-picker placeholder button, a template-download link, and an empty uploaded-records list
+   - Mapping · Dealer: Pending / Mapped segmented; Mapping · Stock Item: Manual / Auto segmented + Tally Company picker chip
+   - Sales · All / Mapped, Closing Stock · All / Mapped: ReportScreen with the filter fields from the web page (dates, company, dealer, stock group, category, state, region, division, HO items, as each page uses them). The detail sheet field list should equal the web table columns, in order.
+   - Sales · Analytics, Closing Stock · Analytics: KPI tile row skeletons (titles from the web pages, e.g. Total Revenue, Total Quantity, Avg Revenue/Dealer) plus chart-card placeholders titled like the web charts.
+3. Filter sheets use static option lists for now (we'll wire GET /ssv-reports/filters/dropdowns in draft 2), but chips, counts and Reset must work.
+4. Write docs\screen-map.md: for each screen, its web page, the endpoints it will call (from the Postman collection) and the fields shown, so draft 2 is a wiring job.
+Verify every screen on the emulator as OWNER (all modules) and USER (some modules off), with screenshots. Check every screen against the rules in plan section 5 and list any that don't comply.</pre>
+        </div>
+      </div>
+    </div>
+
+    <!-- P7 -->
+    <div class="phase" id="p7">
+      <div class="phase-head"><div class="phase-num">P7</div><div><h3>QA, polish &amp; first-draft APK</h3><p>A rules audit across every screen, device checks and a release-signed APK to share.</p></div></div>
+      <div class="phase-body">
+        <div class="cols">
+          <div><h4>Deliverables</h4><ul><li><code>docs/draft1-qa.html</code>: rule-by-screen matrix, screenshots, known issues</li><li>App icon and splash in brand colours</li><li>Release APK</li></ul></div>
+          <div><h4>Done when</h4><ul class="check"><li>All R1–R26 checks pass, or each failure is listed with a reason</li><li>Works at 360dp width and at 1.3× font scale</li><li>The APK installs on a physical phone and logs in to the production API</li></ul></div>
+        </div>
+        <div class="prompt"><div class="prompt-bar">Prompt 8 of 8<button class="copy" type="button">Copy</button></div>
+<pre class="ptext">Phase 7 — QA, polish and first-draft APK.
+
+Read C:\Users\johna\Desktop\TallyDex-app\TallyDex-Mobile-Plan.html (sections 5, 6, 10 and 11), docs\design-sheet.html, docs\screen-map.md and TallyDexMobile\CLAUDE.md.
+
+1. Rules audit: for every screen in plan section 7, check rules R1–R26 and fix what fails. Produce docs\draft1-qa.html with a screen × rule matrix (pass/fixed/waived + reason) and a screenshot per screen.
+2. Role matrix: log in as SUPEROWNER, connected SUPEROWNER, OWNER and USER; confirm the sidebar and tabs match the plan's section 6 table exactly; flip one module off for USER and confirm the item disappears and the deep route shows NoAccessState.
+3. Device checks on the emulator: 360x800 and 412x915; system font scale 1.0 and 1.3; Android 14 and 15 (edge-to-edge: status/nav bar colours, modal bottom padding); airplane mode on login and dashboard (error states, no crash); token expiry (shorten it on the local API or clear the access token) → silent refresh; app kill + relaunch keeps the session.
+4. Polish: app icon from TallyDEx_/login/logo.svg (adaptive icon, navy circle + orange half) generated like DataLynkr's scripts/generate-app-icon.js; splash/window background; press feedback on every pressable; consistent 16dp gutters.
+5. Build: release signing config read from gradle.properties/env (ask me for the keystore or create a draft one and tell me where it is — never commit it), API_BASE_URL set to production, assembleRelease, report the APK path and size.
+6. Update the plan file's section 10 checklist with the results and list the draft-2 backlog (screen wiring order from screen-map.md, OTP/sign-up if backend adds them, deep-link reset password, dark mode, analytics charts).</pre>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="dod">
+    <div class="eyebrow">Section 10</div>
+    <h2>First-draft definition of done</h2>
+    <div class="card">
+      <ul class="check">
+        <li>A user can log in with email and password against the real API. First-login users must change their password.</li>
+        <li>The session survives an app restart. Tokens refresh without the user noticing, and logout clears everything.</li>
+        <li>The sidebar, tabs and gating match section 6 for all four role states.</li>
+        <li>Switching organization (OWNER/USER) and connecting/disconnecting (SUPEROWNER) refresh the modules and the menu.</li>
+        <li>Dashboard, Profile, Change Password, User Activity and Connect Organization are wired to the API.</li>
+        <li>Every other portal screen exists as a rules-compliant skeleton, and <code>docs/screen-map.md</code> lists the endpoints each will use.</li>
+        <li>Screens use the TallyDex palette, Wix Madefor Display + Inter, and Lucide icons, with no hex values in screen code.</li>
+        <li>Typecheck, lint and Jest pass. A release APK installs on a physical Android phone.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="risks">
+    <div class="eyebrow">Section 11</div>
+    <h2>Risks</h2>
+    <div class="tbl-wrap"><table>
+      <thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+      <tbody>
+        <tr><td>Refresh-token behaviour on the backend is unknown (rotation, expiry)</td><td>Users get logged out or stuck in a loop</td><td>P4 tests against the local API. Single-flight refresh, and log out if the refresh fails.</td></tr>
+        <tr><td>Wide report tables don't fit a phone</td><td>Draft 2 rework</td><td>R10 card rows with a detail sheet are decided now. Detail fields equal the web columns.</td></tr>
+        <tr><td>Uploads expect XLSX files from a desktop</td><td>Mobile upload may get little use</td><td>Skeleton only in draft 1. Draft 2 uses the document picker and xlsx, as DataLynkr does.</td></tr>
+        <tr><td>SUPEROWNER connected mode is a client-side flag on the web</td><td>Menu and permissions can drift</td><td>A single <code>orgStore</code> flag drives both <code>buildMenu</code> and <code>permissions</code>. P5 has unit tests per role.</td></tr>
+        <tr><td>HTTP (cleartext) to the local API</td><td>Release builds can't reach dev servers</td><td>Cleartext is allowed only in debug for 10.0.2.2/localhost. Production uses HTTPS.</td></tr>
+        <tr><td>The design reference sidebar shows features with no API (Price Level, SyncLog…)</td><td>Scope creep</td><td>Only its styling is used. Its IA is kept as a backlog item for after draft 1.</td></tr>
+      </tbody>
+    </table></div>
+  </section>
+
+  </main>
+</div>
+
+<footer>TallyDex Mobile · plan to first draft · prepared 14 Oct 2026</footer>
+
+<script>
+  document.querySelectorAll('.prompt').forEach(function (box) {
+    var btn = box.querySelector('.copy');
+    var text = box.querySelector('.ptext').innerText;
+    btn.addEventListener('click', function () {
+      var done = function () { btn.textContent = 'Copied'; btn.classList.add('done'); setTimeout(function () { btn.textContent = 'Copy'; btn.classList.remove('done'); }, 1600); };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, function () { fallback(); });
+      } else { fallback(); }
+      function fallback() {
+        var ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select();
+        try { document.execCommand('copy'); done(); } catch (e) {} document.body.removeChild(ta);
+      }
+    });
+  });
+</script>
+</body>
+</html>

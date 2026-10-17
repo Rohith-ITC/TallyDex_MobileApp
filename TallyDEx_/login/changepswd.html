@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Change Password | Tally DEx</title>
+  <meta name="description" content="Set a new password for your Tally DEx account." />
+  <meta name="application-name" content="Tally DEx" />
+  <meta name="author" content="IT Catalyst Software India Pvt Ltd" />
+  <meta name="theme-color" content="#071523" />
+  <link rel="icon" type="image/svg+xml" href="logo.svg" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Wix+Madefor+Display:wght@400..800&family=Wix+Madefor+Text:wght@400..800&display=swap" />
+  <link rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+
+  <main class="center-shell">
+    <div class="blob blob-tint-orange" aria-hidden="true"></div>
+    <div class="blob blob-tint-navy" aria-hidden="true"></div>
+
+    <div class="center-column reveal-fade-up">
+
+      <div class="brand-block">
+        <a href="login.html" class="logo-link reveal-scale-in delay-100" title="Tally DEx Login">
+          <svg class="brand-logo" viewBox="0 0 3111 2931" xmlns="http://www.w3.org/2000/svg" role="img"
+            aria-label="Tally DEx logo">
+            <g id="Artboard1" transform="matrix(1.037,0,0,0.977,0,0)">
+              <rect x="0" y="0" width="3000" height="3000" style="fill:none;" />
+              <g transform="matrix(0.596864,-0.803922,0.757408,0.633519,-598.778439,1880.367846)">
+                <circle cx="1654" cy="1593" r="972" fill="#071523" />
+              </g>
+              <g transform="matrix(0.596864,-0.803922,0.757408,0.633519,-598.778439,1880.367846)">
+                <path
+                  d="M682.001,1594C682,1593.667 682,1593.333 682,1593C682,1056.539 1117.539,621 1654,621C2190.461,621 2626,1056.539 2626,1593C2626,1593.333 2626,1593.667 2625.999,1594L682.001,1594Z"
+                  fill="#E46C0C" />
+              </g>
+            </g>
+          </svg>
+        </a>
+        <h1 class="brand-title reveal-fade-up delay-200">Change <span class="accent">Password</span></h1>
+      </div>
+
+      <form id="changePasswordForm" class="login-form" novalidate>
+        <div class="form-fields reveal-fade-up">
+
+          <div class="field-group">
+            <label for="oldPassword">Old Password <span class="req">*</span></label>
+            <div class="field-shell field-shell--trailing">
+              <input id="oldPassword" name="oldPassword" type="password" required placeholder="Old Password"
+                autocomplete="current-password" class="password-input" />
+              <button type="button" class="icon-btn" data-toggle="oldPassword" aria-label="Show password"
+                aria-pressed="false">
+                <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="newPassword">New Password <span class="req">*</span></label>
+            <div class="field-shell field-shell--trailing">
+              <input id="newPassword" name="newPassword" type="password" required placeholder="New Password"
+                autocomplete="new-password" minlength="8" class="password-input" />
+              <button type="button" class="icon-btn" data-toggle="newPassword" aria-label="Show password"
+                aria-pressed="false">
+                <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="field-group">
+            <label for="confirmPassword">Confirm Password <span class="req">*</span></label>
+            <div class="field-shell field-shell--trailing">
+              <input id="confirmPassword" name="confirmPassword" type="password" required placeholder="Confirm Password"
+                autocomplete="new-password" minlength="8" class="password-input" />
+              <button type="button" class="icon-btn" data-toggle="confirmPassword" aria-label="Show password"
+                aria-pressed="false">
+                <span class="material-symbols-outlined" aria-hidden="true">visibility</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="button-stack">
+            <button type="submit" class="btn btn-primary" id="changePasswordBtn">Change Password</button>
+          </div>
+        </div>
+      </form>
+
+      <div id="message" class="message" role="status" hidden></div>
+
+      <div class="aux-links reveal-fade-up delay-400">
+        <a class="forgot-link" href="login.html">Back to Login</a>
+      </div>
+
+    </div>
+
+    <footer class="page-footer">
+      <div class="footer-line">
+        <span>&#169;</span>
+        <a href="https://itcatalystindia.com" target="_blank" rel="noopener noreferrer">
+          <span class="footer-brand"><span class="it">IT</span> <span class="catalyst">Catalyst</span></span>
+          <span>Software India Pvt Ltd.</span>
+        </a>
+        <span>2026.</span>
+      </div>
+      <div class="footer-links">
+        <a href="/privacy" target="_blank">Privacy Policy</a>
+        <a href="/terms" target="_blank">Terms of Service</a>
+      </div>
+    </footer>
+
+  </main>
+
+  <script src="changepswd.js" defer></script>
+</body>
+
+</html>
