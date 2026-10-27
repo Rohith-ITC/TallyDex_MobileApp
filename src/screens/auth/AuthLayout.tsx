@@ -3,7 +3,7 @@ import { KeyboardAvoidingView, Platform, ScrollView, StatusBar, StyleSheet, View
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AppText } from '../../components/AppText';
 import { LogoMark, Wordmark } from '../../components/Logo';
-import { env } from '../../config/env';
+import { getAppVersionName } from '../../config/appVersion';
 import { colors, space } from '../../theme';
 
 /** White single column from login/styles.css: logo, wordmark, form, footer. */
@@ -41,7 +41,7 @@ export function AuthLayout({ title, subtitle, children }: { title?: string; subt
             © <AppText variant="label" color="accent">IT</AppText> <AppText variant="label">Catalyst</AppText> Software India Pvt Ltd. 2026
           </AppText>
           <AppText variant="caption" color="text4" align="center" style={styles.version}>
-            Version {env.appVersion}
+            Version {getAppVersionName()}
           </AppText>
         </View>
       </ScrollView>

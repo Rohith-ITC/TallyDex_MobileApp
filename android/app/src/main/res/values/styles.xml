@@ -1,4 +1,4 @@
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Light theme only in draft 1. The black window background stops a white
          flash on cold start before the splash screen draws. -->
@@ -7,6 +7,8 @@
         <item name="android:windowBackground">@color/window_bg</item>
         <item name="android:statusBarColor">@color/window_bg</item>
         <item name="android:navigationBarColor">@color/window_bg</item>
+        <!-- Gray navigation buttons: the bottom tab bar and sheets are white. -->
+        <item name="android:windowLightNavigationBar" tools:targetApi="27">true</item>
     </style>
 
 </resources>

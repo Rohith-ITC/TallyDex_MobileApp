@@ -20,6 +20,7 @@ import { openTab } from '../../navigation/navigationRef';
 import { useSession } from '../../store/sessionStore';
 import { useSync } from '../../store/syncStore';
 import { colors, radii, space } from '../../theme';
+import { DataFreshness, DistributorActivityCard, SalesThisMonth, StockAlertsCards } from './SalesInsights';
 import { dashboardTiles } from './tiles';
 
 const greetingFor = (h: number) => (h < 12 ? 'Good morning' : h < 17 ? 'Good afternoon' : 'Good evening');
@@ -44,6 +45,11 @@ export function DashboardScreen() {
   const tiles = dashboardTiles(user?.role, q.data ?? undefined);
   const firstDownloadFailed = !hasData && !running && !!lastError;
   const access = useMemo(() => reportAccess(user?.role, modules), [user?.role, modules]);
+
+  const hasReports = access.sales.length > 0 || access.stock.length > 0;
+  // Each view has its own download; the All one holds every row.
+  const salesMapped = !access.sales.includes('all');
+  const stockMapped = !access.stock.includes('all');
 
   const shortcuts: Array<{ family: ReportFamily; view: ReportView; title: string; icon: LucideIcon }> = [
     ...access.sales.map((v) => ({ family: 'sales' as const, view: v, title: `Sales · ${VIEW_LABEL[v]}`, icon: v === 'analytics' ? TrendingUp : ChartColumn })),
@@ -71,15 +77,31 @@ export function DashboardScreen() {
             <ErrorState message={`The first download didn't finish: ${lastError}`} onRetry={() => void startSync(null, 'first')} />
           </Card>
         ) : (
-          <View style={styles.grid}>
-            {[0, 2].map((start) => (
-              <View key={start} style={styles.gridRow}>
-                {tiles.slice(start, start + 2).map((t) => (
-                  <StatTile key={t.label} label={t.label} value={t.value} badge={t.badge} icon={t.icon} loading={!hasData || q.isLoading} testID={`tile-${t.label}`} />
-                ))}
-              </View>
-            ))}
-          </View>
+          <>
+            {hasReports ? <DataFreshness /> : null}
+            {access.sales.length ? (
+              <>
+                <SalesThisMonth mapped={salesMapped} />
+                <DistributorActivityCard mapped={salesMapped} />
+              </>
+            ) : null}
+            {access.stock.length ? (
+              <>
+                <Section title="Stock at dealers" />
+                <StockAlertsCards mapped={stockMapped} />
+              </>
+            ) : null}
+            {hasReports ? <Section title="Account" /> : null}
+            <View style={styles.grid}>
+              {[0, 2].map((start) => (
+                <View key={start} style={styles.gridRow}>
+                  {tiles.slice(start, start + 2).map((t) => (
+                    <StatTile key={t.label} label={t.label} value={t.value} badge={t.badge} icon={t.icon} loading={!hasData || q.isLoading} testID={`tile-${t.label}`} />
+                  ))}
+                </View>
+              ))}
+            </View>
+          </>
         )}
 
         {shortcuts.length ? (
@@ -108,7 +130,16 @@ export function DashboardScreen() {
   );
 }
 
+function Section({ title }: { title: string }) {
+  return (
+    <AppText variant="overline" color="text3" style={styles.section}>
+      {title}
+    </AppText>
+  );
+}
+
 const styles = StyleSheet.create({
+  section: { paddingHorizontal: space.xxs, marginTop: space.xs },
   content: { padding: space.gutter, gap: space.md, paddingBottom: space.xxl },
   greeting: {
     backgroundColor: colors.chrome,

@@ -7,5 +7,4 @@ export const env = {
   apiBaseUrl: 'https://tallydex.itcatalystindia.com/api/v3/',
   apiTimeoutMs: 30000,
   appName: 'Tally DEx',
-  appVersion: '1.0',
 } as const;

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { ScrollView, StyleSheet, View } from 'react-native';
 import { colors, radii, space } from '../theme';
 import { AppText } from './AppText';
@@ -47,8 +47,22 @@ export function BarList({ data, format, max: maxRows = 10 }: { data: Datum[]; fo
   );
 }
 
-/** Vertical columns over time (months). Scrolls sideways past ~6 columns. */
-export function ColumnChart({ data, format, height = 150 }: { data: Datum[]; format: (v: number) => string; height?: number }) {
+/**
+ * Vertical columns over time (months, days). Scrolls sideways past ~6 columns;
+ * `startAtEnd` opens on the latest ones.
+ */
+export function ColumnChart({
+  data,
+  format,
+  height = 150,
+  startAtEnd = false,
+}: {
+  data: Datum[];
+  format: (v: number) => string;
+  height?: number;
+  startAtEnd?: boolean;
+}) {
+  const scroller = useRef<ScrollView>(null);
   const top = Math.max(...data.map((d) => d.value), 0);
   if (!data.length) {
     return (
@@ -58,7 +72,13 @@ export function ColumnChart({ data, format, height = 150 }: { data: Datum[]; for
     );
   }
   return (
-    <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.cols}>
+    <ScrollView
+      ref={scroller}
+      horizontal
+      showsHorizontalScrollIndicator={false}
+      contentContainerStyle={styles.cols}
+      onContentSizeChange={startAtEnd ? () => scroller.current?.scrollToEnd({ animated: false }) : undefined}
+    >
       {data.map((d, i) => (
         <View key={`${d.label}-${i}`} style={styles.col} accessible accessibilityLabel={`${d.label}: ${format(d.value)}`}>
           <AppText variant="caption" color="text2" numberOfLines={1} style={styles.colValue}>

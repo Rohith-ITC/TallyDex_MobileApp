@@ -1,6 +1,7 @@
 package com.itcatalyst.tallydex
 
 import android.app.Application
+import androidx.appcompat.app.AppCompatDelegate
 import com.facebook.react.PackageList
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactHost
@@ -16,8 +17,7 @@ class MainApplication : Application(), ReactApplication {
       object : DefaultReactNativeHost(this) {
         override fun getPackages(): List<ReactPackage> =
             PackageList(this).packages.apply {
-              // Packages that cannot be autolinked yet can be added manually here, for example:
-              // add(MyReactNativePackage())
+              add(AppVersionPackage())
             }
 
         override fun getJSMainModuleName(): String = "index"
@@ -33,6 +33,10 @@ class MainApplication : Application(), ReactApplication {
 
   override fun onCreate() {
     super.onCreate()
+    // The app has a light palette only. Without this, a phone in dark mode gives
+    // the system bars (and React Native's modal windows) white buttons that
+    // vanish against the app's white surfaces.
+    AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_NO)
     loadReactNative(this)
   }
 }

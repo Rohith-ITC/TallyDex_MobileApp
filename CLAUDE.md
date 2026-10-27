@@ -17,6 +17,8 @@ npx react-native start --port 8082   # 8081 is often taken by the DataLynkr Metr
 
 API base URL: `src/config/env.ts` (production `https://tallydex.itcatalystindia.com/api/v3/`).
 
+App version: set **only** `versionName` (and `versionCode`) in `android/app/build.gradle`. The native `AppVersionModule` (Kotlin, registered in `MainApplication.kt`) exposes it, and `getAppVersionName()` in `src/config/appVersion.ts` is what every screen displays. Never hard-code a version in JS.
+
 ## Layout
 
 - `src/api/`: `client.ts` (axios; Bearer; `tenant: true` adds `x-organization-id`; one single-flight `/auth/refresh-token` on 401; `skipAuthRefresh` for login/change-password), `endpoints.ts`, `types.ts`, `session.ts` (in-memory tokens + org id, so the client never imports stores).
@@ -24,6 +26,7 @@ API base URL: `src/config/env.ts` (production `https://tallydex.itcatalystindia.
 - `src/constants/modules.ts`: `reportAccess()` is the only place report views are granted. `src/navigation/menu.ts` builds the sidebar from it.
 - `src/navigation/RootNavigator.tsx`: splash → auth / first-login password / main (tabs Home · Sales · Stock, global `Sidebar`, `OrgPickerHost`). Android back handling lives here.
 - `src/screens/reports/`: `ReportScaffold` (All / Mapped / Analytics segments, gating, `LocalDataGate`), `ReportList` (infinite list, 50 per page), `Filters`, `DetailSheet`, analytics (`aggregate.ts`), `salesWindow.tsx`.
+- `src/screens/dashboard/`: greeting, then (per report access) `SalesInsights.tsx` sections: data freshness, this month's sales tiles + daily trend, distributors without sales this month, out-of-stock / running-low (< 7 days cover) lines; then the role tiles (`tiles.ts`) and report shortcuts. The SQL is `src/db/insights.ts` (All table when the user has the All view, else Mapped).
 - `src/screens/data/DataManagementScreen.tsx`: saved-data status, Update / Cancel, auto-update switch, sales period, per-dataset rows, new API fields, storage.
 
 ## Local database (offline-first)

@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { ChartColumn, ChevronDown, ChevronsUpDown, Database, LayoutDashboard, LogOut, Package, type LucideIcon } from 'lucide-react-native';
+import { getAppVersionName } from '../config/appVersion';
 import { env } from '../config/env';
 import { buildMenu, type MenuGroup, type MenuLeaf } from '../navigation/menu';
 import { openDataManagement, openTab } from '../navigation/navigationRef';
@@ -115,7 +116,7 @@ export function Sidebar() {
         testID="sidebar"
         style={[styles.panel, { width: WIDTH, paddingTop: insets.top + space.lg, paddingBottom: insets.bottom + space.md, transform: [{ translateX }] }]}
       >
-        <View style={styles.logoRow} accessible accessibilityLabel={`${env.appName} version ${env.appVersion}`}>
+        <View style={styles.logoRow} accessible accessibilityLabel={`${env.appName} version ${getAppVersionName()}`}>
           <LogoMark size={34} />
           <Wordmark onDark size={24} />
         </View>
@@ -253,7 +254,7 @@ export function Sidebar() {
             </AppText>
           </Pressable>
           <AppText variant="caption" color="chromeMuted" align="center" style={styles.version}>
-            Version {env.appVersion}
+            Version {getAppVersionName()}
           </AppText>
         </View>
       </Animated.View>

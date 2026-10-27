@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { Pressable, StyleSheet } from 'react-native';
+import { Pressable, StyleSheet, type StyleProp, type ViewStyle } from 'react-native';
 import dayjs from 'dayjs';
 import { Info } from 'lucide-react-native';
 import { AppText } from '../../components/AppText';
@@ -17,11 +17,19 @@ export function useSalesWindow(): DateRange | null {
 }
 
 /** Shown when the chosen dates reach outside what was downloaded. */
-export function OutsideWindowNote({ range, downloaded }: { range: DateRange; downloaded: DateRange | null }) {
+export function OutsideWindowNote({
+  range,
+  downloaded,
+  style,
+}: {
+  range: DateRange;
+  downloaded: DateRange | null;
+  style?: StyleProp<ViewStyle>;
+}) {
   const setUpdateSheetOpen = useSync((s) => s.setUpdateSheetOpen);
   if (!downloaded || (!range.from.isBefore(downloaded.from, 'day') && !range.to.isAfter(downloaded.to, 'day'))) return null;
   return (
-    <Pressable accessibilityRole="button" onPress={() => setUpdateSheetOpen(true)} style={styles.note}>
+    <Pressable accessibilityRole="button" onPress={() => setUpdateSheetOpen(true)} style={[styles.note, style]}>
       <Info size={16} color={colors.info} />
       <AppText variant="caption" color="info" style={styles.noteText}>
         Downloaded sales cover {rangeLabel(downloaded)}. Tap to update with a different period.
